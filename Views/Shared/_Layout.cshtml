@@ -1,0 +1,439 @@
+﻿<!DOCTYPE html>
+
+<html lang="es">
+
+<head>
+
+    <meta charset="utf-8" />
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0" />
+
+    <title>
+        @ViewData["Title"] - Explora Costa Rica
+    </title>
+
+
+    <!-- =====================================================
+         BOOTSTRAP
+         ===================================================== -->
+
+    <link rel="stylesheet"
+          href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+
+    <!-- =====================================================
+         CSS GENERAL DEL PROYECTO
+         ===================================================== -->
+
+    <link rel="stylesheet"
+          href="~/css/site.css"
+          asp-append-version="true" />
+
+
+    <link rel="stylesheet"
+          href="~/ExploraCostaRica.styles.css"
+          asp-append-version="true" />
+
+
+    <style>
+
+        /* ====================================================
+                   NAVBAR GENERAL
+                   Este menú aparecerá en TODAS las páginas.
+                   ==================================================== */
+
+        .main-navbar {
+            background-color: white;
+            border-bottom: 1px solid #e5e5e5;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            padding: 12px 0;
+        }
+
+
+        /* Marca / logo */
+
+        .explora-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #14532d !important;
+            text-decoration: none;
+        }
+
+
+        .brand-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: #198754;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+
+        /* Links */
+
+        .main-navbar .nav-link {
+            color: #333 !important;
+            font-weight: 500;
+            margin: 0 5px;
+            border-radius: 8px;
+            padding: 8px 13px !important;
+            transition: 0.2s;
+        }
+
+
+            .main-navbar .nav-link:hover {
+                background-color: #eef8f2;
+                color: #198754 !important;
+            }
+
+
+        /* Botón de usuario */
+
+        .login-button {
+            background: #198754;
+            color: white !important;
+            border-radius: 20px;
+            padding: 8px 18px !important;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+
+            .login-button:hover {
+                background: #146c43;
+                color: white !important;
+            }
+
+
+        /* ====================================================
+                   CONTENIDO PRINCIPAL
+                   ==================================================== */
+
+        .main-content {
+            min-height: calc(100vh - 150px);
+        }
+
+
+        /* ====================================================
+                   FOOTER
+                   ==================================================== */
+
+        .main-footer {
+            margin-top: 50px;
+            padding: 25px 0;
+            border-top: 1px solid #e5e5e5;
+            color: #777;
+            background: white;
+        }
+
+
+            .main-footer a {
+                color: #198754;
+                text-decoration: none;
+            }
+
+
+                .main-footer a:hover {
+                    text-decoration: underline;
+                }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- =====================================================
+         MENÚ PRINCIPAL
+         ===================================================== -->
+
+    <header>
+
+        <nav class="navbar navbar-expand-lg main-navbar">
+
+            <div class="container">
+
+
+                <!-- ==========================================
+                     LOGO / NOMBRE
+                     ========================================== -->
+
+                <a class="explora-brand"
+                   asp-controller="Home"
+                   asp-action="Index">
+
+                    <span class="brand-icon">
+                        🍃
+                    </span>
+
+                    <span>
+                        Explora Costa Rica
+                    </span>
+
+                </a>
+
+
+
+                <!-- ==========================================
+                     BOTÓN RESPONSIVE
+                     ========================================== -->
+
+                <button class="navbar-toggler"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#mainNavbar"
+                        aria-controls="mainNavbar"
+                        aria-expanded="false"
+                        aria-label="Mostrar navegación">
+
+                    <span class="navbar-toggler-icon"></span>
+
+                </button>
+
+
+
+                <!-- ==========================================
+                     OPCIONES DEL MENÚ
+                     ========================================== -->
+
+                <div class="collapse navbar-collapse"
+                     id="mainNavbar">
+
+
+                    <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+
+
+                        <!-- INICIO -->
+
+                        <li class="nav-item">
+
+                            <a class="nav-link"
+                               asp-controller="Home"
+                               asp-action="Index">
+
+                                Inicio
+
+                            </a>
+
+                        </li>
+
+
+
+                        <!-- EXPLORAR -->
+
+                        <li class="nav-item">
+
+                            <a class="nav-link"
+                               asp-controller="Explorar"
+                               asp-action="Index">
+
+                                Explorar
+
+                            </a>
+
+                        </li>
+
+
+
+                        <!-- DESTINOS -->
+
+                        <li class="nav-item">
+
+                            <a class="nav-link"
+                               asp-controller="Destinos"
+                               asp-action="Index">
+
+                                Destinos
+
+                            </a>
+
+                        </li>
+
+
+
+                        <!-- FAVORITOS -->
+
+                        <li class="nav-item">
+
+                            <a class="nav-link"
+                               asp-controller="Favoritos"
+                               asp-action="Index">
+
+                                Favoritos
+
+                            </a>
+
+                        </li>
+
+
+
+                        <!-- DESCARGAS -->
+
+                        <li class="nav-item">
+
+                            <a class="nav-link"
+                               asp-controller="Descargas"
+                               asp-action="Index">
+
+                                Descargas
+
+                            </a>
+
+                        </li>
+
+
+                    </ul>
+
+
+
+                    <!-- ======================================
+                         BOTONES DERECHA
+                         ====================================== -->
+
+                    <div class="d-flex align-items-center gap-3">
+
+
+                        <!-- BUSCADOR GLOBAL
+                             Por ahora solo visual -->
+
+                        <a href="#"
+                           class="text-dark text-decoration-none"
+                           title="Buscar">
+
+                            🔍
+
+                        </a>
+
+
+
+                        <!-- FAVORITOS RÁPIDOS -->
+
+                        <a asp-controller="Favoritos"
+                           asp-action="Index"
+                           class="text-dark text-decoration-none"
+                           title="Favoritos">
+
+                            ♡
+
+                        </a>
+
+
+
+                        <!-- LOGIN
+                             Lo conectaremos después -->
+
+                        <a href="#"
+                           class="login-button">
+
+                            👤 Iniciar sesión
+
+                        </a>
+
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+        </nav>
+
+    </header>
+
+
+
+    <!-- =====================================================
+         CONTENIDO DE CADA PÁGINA
+         =====================================================
+
+         Aquí ASP.NET coloca:
+
+         Home/Index.cshtml
+         Explorar/Index.cshtml
+         Destinos/Index.cshtml
+         Favoritos/Index.cshtml
+         etc.
+
+         ===================================================== -->
+
+    <main class="main-content">
+
+        @RenderBody()
+
+    </main>
+
+
+
+    <!-- =====================================================
+         FOOTER
+         ===================================================== -->
+
+    <footer class="main-footer">
+
+        <div class="container">
+
+            <div class="d-flex
+                        flex-column
+                        flex-md-row
+                        justify-content-between
+                        align-items-center
+                        gap-2">
+
+                <div>
+
+                    &copy; 2026 -
+                    <strong>Explora Costa Rica</strong>
+
+                </div>
+
+
+                <div>
+
+                    Descubre naturaleza, cultura y biodiversidad
+                    en un solo lugar.
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </footer>
+
+
+
+    <!-- =====================================================
+         JAVASCRIPT
+         ===================================================== -->
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+
+    <script src="~/js/site.js"
+            asp-append-version="true">
+    </script>
+
+
+    @await RenderSectionAsync(
+    "Scripts",
+        required: false
+        )
+
+
+</body>
+
+</html>

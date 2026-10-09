@@ -480,7 +480,8 @@
 
                                 <button type="button"
                                         class="btn-favorite"
-                                        onclick="favoriteDemo('@item.Title')">
+                                        data-media-id="@item.MediaId"
+                                        onclick="toggleFavorite(this)">
                                     ♡ Favorito
                                 </button>
 
@@ -700,22 +701,6 @@
 
 
     // ========================================================
-    // FAVORITOS
-    // Todavía no guarda en BD.
-    // Será nuestra siguiente funcionalidad.
-    // ========================================================
-
-    function favoriteDemo(title) {
-
-        alert(
-            "Próximamente guardaremos \"" +
-            title +
-            "\" en Favoritos."
-        );
-    }
-
-
-    // ========================================================
     // DESCARGAS
     // Todavía no registra en BD.
     // ========================================================
@@ -746,3 +731,12 @@
         );
 
 </script>
+
+
+@* Favoritos (Persona 4): token antiforgery + script que guarda en BD y pinta el corazón *@
+@Html.AntiForgeryToken()
+
+@section Scripts {
+    <link rel="stylesheet" href="~/css/favoritos.css" asp-append-version="true" />
+    <script src="~/js/favoritos.js" asp-append-version="true"></script>
+}

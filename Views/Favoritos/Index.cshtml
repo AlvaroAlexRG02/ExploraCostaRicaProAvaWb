@@ -1,0 +1,160 @@
+@model IEnumerable<ExploraCostaRica.Models.Entities.VwUserFavorite>
+
+@{
+    ViewData["Title"] = "Mis favoritos";
+
+    string tipo = ViewBag.Tipo as string ?? "todos";
+    string orden = ViewBag.Orden as string ?? "recientes";
+    int total = Model.Count();
+
+    string IconFor(string contentType) => contentType switch
+    {
+        "Video" => "🎬",
+        "Noticia" => "📰",
+        "Clima" => "🌦️",
+        "Libro" => "📚",
+        "Biodiversidad" => "🌿",
+        "Lugar" => "📍",
+        _ => "📷"
+    };
+}
+
+<link rel="stylesheet" href="~/css/favoritos.css" asp-append-version="true" />
+
+@Html.AntiForgeryToken()
+
+<div class="fav-page">
+
+
+    <section class="fav-hero">
+        <h1>Mis favoritos</h1>
+        <p>Todos los lugares y contenidos que guardaste para tu próxima aventura</p>
+
+        <div class="fav-tabs">
+            <a class="fav-tab @(tipo == "todos" ? "active" : "")"
+               asp-action="Index" asp-route-tipo="todos" asp-route-orden="@orden">
+                ▦ Todos
+            </a>
+            <a class="fav-tab @(tipo == "destinos" ? "active" : "")"
+               asp-action="Index" asp-route-tipo="destinos" asp-route-orden="@orden">
+                📍 Destinos
+            </a>
+            <a class="fav-tab @(tipo == "contenido" ? "active" : "")"
+               asp-action="Index" asp-route-tipo="contenido" asp-route-orden="@orden">
+                📄 Contenido
+            </a>
+        </div>
+    </section>
+
+
+    <div class="fav-header">
+        <div>
+            <h2><span class="fav-heart-title">♥</span> Mis favoritos</h2>
+            <p>Aquí encontrarás todos los destinos y contenidos que has guardado.</p>
+        </div>
+
+        <div class="fav-header-right">
+            <span id="favCount">@total @(total == 1 ? "elemento guardado" : "elementos guardados")</span>
+
+            <form method="get" asp-action="Index" id="favSortForm">
+                <input type="hidden" name="tipo" value="@tipo" />
+                <select name="orden" class="form-select form-select-sm"
+                        onchange="document.getElementById('favSortForm').submit()">
+                    <option value="recientes" selected="@(orden == "recientes")">Más recientes</option>
+                    <option value="antiguos" selected="@(orden == "antiguos")">Más antiguos</option>
+                    <option value="titulo" selected="@(orden == "titulo")">Título (A-Z)</option>
+                </select>
+            </form>
+        </div>
+    </div>
+
+
+    @if (total > 0)
+    {
+        <div class="fav-grid" id="favGrid">
+            @foreach (var item in Model)
+            {
+                <article class="fav-card" data-media-id="@item.MediaId">
+
+                    <div class="fav-image-wrap">
+                        @if (!string.IsNullOrWhiteSpace(item.ImageUrl))
+                        {
+                            <img class="fav-image" src="@item.ImageUrl" alt="@item.Title" />
+                        }
+                        else
+                        {
+                            <div class="fav-placeholder">
+                                <span>@IconFor(item.ContentType)</span>
+                            </div>
+                        }
+
+                        
+                        <button type="button"
+                                class="fav-heart is-favorite"
+                                data-media-id="@item.MediaId"
+                                title="Quitar de favoritos"
+                                aria-label="Quitar de favoritos"
+                                onclick="removeFavoriteCard(@item.MediaId)">
+                            ♥
+                        </button>
+
+                        <span class="fav-badge">@item.ContentType</span>
+                    </div>
+
+                    <div class="fav-body">
+                        <h3>@item.Title</h3>
+
+                        <p class="fav-desc">@item.Description</p>
+
+                        <div class="fav-meta">
+                            @if (!string.IsNullOrWhiteSpace(item.Destination))
+                            {
+                                <div>📍 @item.Destination</div>
+                            }
+                            @if (!string.IsNullOrWhiteSpace(item.Category))
+                            {
+                                <div>🏷️ @item.Category</div>
+                            }
+                            <div>🌐 @item.Source</div>
+                        </div>
+
+                        <div class="fav-actions">
+                            <button type="button"
+                                    class="fav-btn-remove"
+                                    onclick="removeFavoriteCard(@item.MediaId)">
+                                🗑 Quitar
+                            </button>
+
+                            @if (!string.IsNullOrWhiteSpace(item.Url))
+                            {
+                                <a class="fav-btn-more" href="@item.Url" target="_blank" rel="noopener noreferrer">
+                                    Ver más →
+                                </a>
+                            }
+                            else
+                            {
+                                <span class="fav-btn-more disabled">Sin enlace</span>
+                            }
+                        </div>
+                    </div>
+                </article>
+            }
+        </div>
+    }
+
+    <div class="fav-empty" id="favEmpty" style="@(total > 0 ? "display:none" : "")">
+        <div class="fav-empty-icon">♡</div>
+        <h3>
+            @(tipo == "todos"
+                ? "Aún no tienes favoritos"
+                : "No tienes favoritos en esta categoría")
+        </h3>
+        <p>Pulsa el corazón en cualquier tarjeta para guardarla aquí.</p>
+        <a class="fav-btn-more" asp-controller="Home" asp-action="Index">Explorar contenido</a>
+    </div>
+
+</div>
+
+@section Scripts {
+    <script src="~/js/favoritos.js" asp-append-version="true"></script>
+}

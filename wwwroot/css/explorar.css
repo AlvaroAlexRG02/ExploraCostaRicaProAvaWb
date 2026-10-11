@@ -1,0 +1,237 @@
+/* ============================================================
+   PANTALLA EXPLORAR  (Views/Explorar/Index.cshtml)
+   ============================================================ */
+
+:root {
+    --ecr-verde: #146c43;
+    --ecr-verde-osc: #0b3d2e;
+    --ecr-verde-claro: #e8f5ee;
+    --ecr-gris: #6b7280;
+}
+
+/* ---------- Encabezado ---------- */
+.explorar-hero {
+    background: linear-gradient(135deg, var(--ecr-verde-osc), #198754);
+    color: #fff;
+    border-radius: 20px;
+    padding: 45px 24px 30px;
+    margin: 20px 0 28px;
+    text-align: center;
+}
+
+.explorar-hero h1 { font-size: 2.6rem; font-weight: 700; margin-bottom: 8px; }
+.explorar-hero p  { opacity: .9; max-width: 720px; margin: 0 auto 24px; }
+
+.explorar-search {
+    display: flex;
+    align-items: center;
+    max-width: 760px;
+    margin: 0 auto 22px;
+    background: #fff;
+    border-radius: 999px;
+    padding: 6px 6px 6px 18px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.15);
+}
+
+.explorar-search-icon { margin-right: 8px; }
+
+.explorar-search input {
+    flex: 1;
+    border: 0;
+    outline: 0;
+    font-size: 1rem;
+    min-width: 0;
+}
+
+.explorar-search button {
+    border: 0;
+    border-radius: 999px;
+    background: var(--ecr-verde);
+    color: #fff;
+    font-weight: 600;
+    padding: 10px 28px;
+}
+
+.explorar-search button:hover { background: var(--ecr-verde-osc); }
+
+.explorar-pills { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+
+.explorar-pill {
+    background: #fff;
+    color: #1f2937;
+    border-radius: 999px;
+    padding: 7px 18px;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: .92rem;
+    box-shadow: 0 2px 6px rgba(0,0,0,.1);
+}
+
+.explorar-pill:hover  { background: var(--ecr-verde-claro); color: var(--ecr-verde-osc); }
+.explorar-pill.active { background: var(--ecr-verde); color: #fff; }
+
+/* ---------- Distribución: filtros + resultados ---------- */
+.explorar-layout {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 24px;
+    align-items: start;
+    padding-bottom: 50px;
+}
+
+/* ---------- Panel de filtros ---------- */
+.explorar-filtros {
+    background: #fff;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 4px 14px rgba(0,0,0,.06);
+    position: sticky;
+    top: 16px;
+}
+
+.explorar-filtros h5 { font-weight: 700; color: var(--ecr-verde-osc); margin-bottom: 16px; }
+
+.filtro-grupo { margin-bottom: 18px; }
+
+.filtro-titulo { display: block; font-weight: 600; font-size: .9rem; margin-bottom: 6px; }
+
+.filtro-opcion {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: .9rem;
+    padding: 2px 0;
+    cursor: pointer;
+}
+
+.filtro-opcion small { margin-left: auto; color: var(--ecr-gris); }
+.filtro-opcion input { accent-color: var(--ecr-verde); }
+
+.btn-aplicar, .btn-limpiar {
+    display: block;
+    width: 100%;
+    text-align: center;
+    border-radius: 999px;
+    padding: 9px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.btn-aplicar { background: var(--ecr-verde); color: #fff; border: 0; margin-bottom: 8px; }
+.btn-aplicar:hover { background: var(--ecr-verde-osc); color: #fff; }
+.btn-limpiar { background: #fff; color: #1f2937; border: 1px solid #d1d5db; }
+.btn-limpiar:hover { background: #f3f4f6; }
+
+/* ---------- Barra de resultados ---------- */
+.resultados-barra {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+/* ---------- Tarjetas ---------- */
+.explorar-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 18px;
+}
+
+.explorar-card {
+    background: #fff;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 4px 14px rgba(0,0,0,.07);
+    display: flex;
+    flex-direction: column;
+    transition: transform .15s ease, box-shadow .15s ease;
+}
+
+.explorar-card:hover { transform: translateY(-3px); box-shadow: 0 10px 24px rgba(0,0,0,.12); }
+
+.explorar-card-img { position: relative; height: 150px; background: var(--ecr-verde-claro); }
+.explorar-card-img img { width: 100%; height: 100%; object-fit: cover; }
+
+.img-placeholder {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.6rem;
+}
+
+.tipo-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: rgba(17, 24, 39, .8);
+    color: #fff;
+    border-radius: 999px;
+    padding: 3px 12px;
+    font-size: .78rem;
+    font-weight: 600;
+}
+
+.explorar-card-body { padding: 14px 16px 16px; display: flex; flex-direction: column; flex: 1; }
+.explorar-card-body h6 { font-weight: 700; margin-bottom: 6px; }
+
+.descripcion {
+    font-size: .86rem;
+    color: var(--ecr-gris);
+    margin-bottom: 8px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.meta { display: flex; flex-direction: column; gap: 2px; font-size: .8rem; color: #374151; margin-bottom: 8px; }
+
+.etiquetas { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+
+.etiqueta {
+    background: #f3f4f6;
+    border-radius: 999px;
+    padding: 2px 10px;
+    font-size: .75rem;
+}
+
+.acciones { margin-top: auto; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+
+.btn-ver { font-size: .82rem; font-weight: 600; color: var(--ecr-verde); text-decoration: none; }
+.btn-ver:hover { text-decoration: underline; }
+
+/* ---------- Sin resultados ---------- */
+.sin-resultados {
+    background: #fff;
+    border-radius: 16px;
+    padding: 50px 20px;
+    text-align: center;
+    box-shadow: 0 4px 14px rgba(0,0,0,.06);
+}
+
+.sin-resultados-icono { font-size: 3rem; }
+
+/* ---------- Celular / tablet ---------- */
+@media (max-width: 900px) {
+    .explorar-layout { grid-template-columns: 1fr; }
+    .explorar-filtros { position: static; }
+    .explorar-hero h1 { font-size: 2rem; }
+}
+
+/* ---------- Botón de favorito (usa favoritos.js de Jefry) ---------- */
+.explorar-card .btn-favorite {
+    border: 0;
+    border-radius: 999px;
+    padding: 5px 12px;
+    font-size: .8rem;
+    font-weight: 600;
+    background: #fff0f2;
+    color: #c7254e;
+}
+
+.explorar-card .btn-favorite.is-favorite { background: #e0245e; color: #fff; }
+
+.btn-ver-todo { display: inline-block; width: auto; padding: 9px 28px; }

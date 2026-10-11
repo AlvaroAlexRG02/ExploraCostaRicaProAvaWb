@@ -1,4 +1,5 @@
 ﻿using ExploraCostaRica.Data;
+using ExploraCostaRica.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -30,6 +31,18 @@ builder.Services.AddDbContext<ExploraCostaRicaDbContext>(options =>
         )
     )
 );
+
+
+// ============================================================
+// SERVICIOS DE LA APLICACIÓN (Inyección de dependencias)
+// ============================================================
+
+// Explorar y Búsqueda:
+// cuando un controller pida IExplorarService,
+// ASP.NET Core le entrega un ExplorarService.
+// Scoped = una instancia nueva por cada petición HTTP
+// (igual que el DbContext que usa por dentro).
+builder.Services.AddScoped<IExplorarService, ExplorarService>();
 
 
 // ============================================================

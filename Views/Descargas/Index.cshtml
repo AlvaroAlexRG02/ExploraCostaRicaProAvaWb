@@ -5,26 +5,25 @@
 }
 
 <style>
-    .descargas-contenedor {
-        max-width: 1200px;
+    .descargas-container {
+        max-width: 1150px;
         margin: auto;
         padding: 30px 15px;
-        font-family: Arial, sans-serif;
     }
 
     .descargas-hero {
         background: linear-gradient(120deg, #064e3b, #059669);
         color: white;
-        padding: 45px 30px;
-        border-radius: 18px;
         text-align: center;
+        padding: 45px 20px;
+        border-radius: 18px;
         margin-bottom: 25px;
     }
 
-    .descargas-hero h1 {
-        font-weight: 700;
-        font-size: 38px;
-    }
+        .descargas-hero h1 {
+            font-size: 38px;
+            font-weight: bold;
+        }
 
     .estadisticas {
         display: grid;
@@ -41,21 +40,20 @@
         text-align: center;
     }
 
-    .estadistica h2 {
-        color: #047857;
-        font-size: 30px;
-        margin: 0;
-    }
+        .estadistica h2 {
+            color: #047857;
+            font-size: 30px;
+        }
 
-    .seccion-titulo {
+    .titulo-seccion {
         color: #065f46;
-        font-weight: 700;
-        margin: 25px 0 15px;
+        font-weight: bold;
+        margin: 30px 0 18px;
     }
 
     .contenidos-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
         gap: 20px;
     }
 
@@ -67,40 +65,39 @@
         box-shadow: 0 4px 12px #00000010;
     }
 
-    .contenido-card img {
-        width: 100%;
-        height: 160px;
-        object-fit: cover;
-    }
+        .contenido-card img {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+        }
 
     .contenido-info {
         padding: 18px;
     }
 
-    .contenido-info h5 {
-        color: #064e3b;
-        font-weight: 700;
-    }
+        .contenido-info h5 {
+            color: #064e3b;
+            font-weight: bold;
+        }
 
-    .contenido-info p {
-        color: #64748b;
-        font-size: 14px;
-    }
+        .contenido-info p {
+            color: #64748b;
+            font-size: 14px;
+        }
 
     .btn-descargar {
+        width: 100%;
         background: #047857;
         color: white;
         border: none;
         padding: 11px;
-        width: 100%;
         border-radius: 8px;
-        cursor: pointer;
     }
 
-    .btn-descargar:hover {
-        background: #065f46;
-        color: white;
-    }
+        .btn-descargar:hover {
+            background: #065f46;
+            color: white;
+        }
 
     .historial-tabla {
         width: 100%;
@@ -108,30 +105,39 @@
         background: white;
     }
 
-    .historial-tabla th {
-        background: #064e3b;
-        color: white;
-        padding: 13px;
-        text-align: left;
-    }
+        .historial-tabla th {
+            background: #064e3b;
+            color: white;
+            padding: 14px;
+            text-align: left;
+        }
 
-    .historial-tabla td {
-        padding: 13px;
-        border-bottom: 1px solid #e5e7eb;
-    }
+        .historial-tabla td {
+            padding: 12px;
+            border-bottom: 1px solid #e5e7eb;
+            vertical-align: middle;
+        }
 
-    .historial-contenedor {
+    .historial-container {
         overflow-x: auto;
         border-radius: 12px;
+        border: 1px solid #e5e7eb;
     }
 
-    .etiqueta-json {
-        background: #dcfce7;
-        color: #166534;
-        padding: 5px 10px;
-        border-radius: 20px;
-        font-size: 12px;
+    .acciones {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
     }
+
+        .acciones form {
+            margin: 0;
+        }
+
+        .acciones .btn {
+            font-size: 12px;
+            white-space: nowrap;
+        }
 
     @@media (max-width: 600px) {
         .estadisticas {
@@ -140,13 +146,20 @@
     }
 </style>
 
-<div class="descargas-contenedor">
+<div class="descargas-container">
 
     <div class="descargas-hero">
         <h1>Descargas</h1>
         <p>Explorá, descargá y conservá información de Costa Rica.</p>
         <p>Archivos disponibles en formato JSON</p>
     </div>
+
+    @if (TempData["Exito"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["Exito"]
+        </div>
+    }
 
     @if (TempData["Error"] != null)
     {
@@ -156,7 +169,6 @@
     }
 
     <div class="estadisticas">
-
         <div class="estadistica">
             <h2>@Model.Historial.Count</h2>
             <span>Descargas realizadas</span>
@@ -171,33 +183,30 @@
             <h2>JSON</h2>
             <span>Formato disponible</span>
         </div>
-
     </div>
 
-    <h3 class="seccion-titulo">Contenido disponible</h3>
+    <h3 class="titulo-seccion">Contenido disponible</h3>
 
     @if (!Model.UsuarioDemoId.HasValue)
     {
         <div class="alert alert-warning">
-            No existe un usuario activo en la base de datos.
-            Se necesita un usuario demo para registrar descargas.
+            No existe un usuario demo activo para descargar.
         </div>
     }
 
     @if (!Model.Contenidos.Any())
     {
         <div class="alert alert-info">
-            No hay contenido disponible para descargar.
+            No hay contenido disponible.
         </div>
     }
 
     <div class="contenidos-grid">
-
         @foreach (var item in Model.Contenidos)
         {
             <div class="contenido-card">
 
-                @if (!string.IsNullOrEmpty(item.ImageUrl))
+                @if (!string.IsNullOrWhiteSpace(item.ImageUrl))
                 {
                     <img src="@item.ImageUrl"
                          alt="@item.Title"
@@ -205,7 +214,6 @@
                 }
 
                 <div class="contenido-info">
-
                     <h5>@item.Title</h5>
 
                     <p>
@@ -237,46 +245,92 @@
                         <button type="submit"
                                 class="btn-descargar"
                                 disabled="@(!Model.UsuarioDemoId.HasValue)">
-                            Descargar JSON
+                            ⬇ Descargar JSON
                         </button>
-
                     </form>
-
                 </div>
             </div>
         }
-
     </div>
 
-    <h3 class="seccion-titulo">Mi historial de descargas</h3>
+    <h3 class="titulo-seccion">Mi historial de descargas</h3>
 
-    <div class="historial-contenedor">
-
+    <div class="historial-container">
         <table class="historial-tabla">
-
             <thead>
                 <tr>
                     <th>Contenido</th>
                     <th>Archivo</th>
                     <th>Formato</th>
                     <th>Fecha</th>
+                    <th>Acciones</th>
                 </tr>
             </thead>
 
             <tbody>
-
                 @foreach (var descarga in Model.Historial)
                 {
                     <tr>
                         <td>@descarga.Media?.Title</td>
+
                         <td>@descarga.FileName</td>
+
                         <td>
-                            <span class="etiqueta-json">
+                            <span class="badge bg-success">
                                 @descarga.FileFormat
                             </span>
                         </td>
+
                         <td>
                             @descarga.DownloadedAt.ToString("dd/MM/yyyy HH:mm")
+                        </td>
+
+                        <td>
+                            <div class="acciones">
+
+                                <a asp-controller="Descargas"
+                                   asp-action="Abrir"
+                                   asp-route-id="@descarga.DownloadId"
+                                   target="_blank"
+                                   rel="noopener"
+                                   class="btn btn-outline-primary">
+                                    👁 Abrir
+                                </a>
+
+                                <form asp-controller="Descargas"
+                                      asp-action="DescargarJson"
+                                      method="post">
+
+                                    @Html.AntiForgeryToken()
+
+                                    <input type="hidden"
+                                           name="mediaId"
+                                           value="@descarga.MediaId" />
+
+                                    <button type="submit"
+                                            class="btn btn-outline-success">
+                                        ⬇ Descargar
+                                    </button>
+                                </form>
+
+                                <form asp-controller="Descargas"
+                                      asp-action="Eliminar"
+                                      method="post"
+                                      onsubmit="return confirm('¿Eliminar este registro del historial?');">
+
+                                    @Html.AntiForgeryToken()
+
+                                    <input type="hidden"
+                                           name="id"
+                                           value="@descarga.DownloadId" />
+
+                                    <button type="submit"
+                                            class="btn btn-outline-danger">
+                                        🗑 Eliminar
+                                    </button>
+                                </form>
+
+                            </div>
                         </td>
                     </tr>
                 }
@@ -284,16 +338,14 @@
                 @if (!Model.Historial.Any())
                 {
                     <tr>
-                        <td colspan="4" style="text-align:center; padding:25px;">
+                        <td colspan="5"
+                            class="text-center p-4">
                             Todavía no hay descargas registradas.
                         </td>
                     </tr>
                 }
-
             </tbody>
-
         </table>
-
     </div>
 
 </div>

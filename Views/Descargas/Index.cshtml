@@ -1,0 +1,299 @@
+﻿@model ExploraCostaRica.Controllers.DescargasViewModel
+
+@{
+    ViewData["Title"] = "Descargas";
+}
+
+<style>
+    .descargas-contenedor {
+        max-width: 1200px;
+        margin: auto;
+        padding: 30px 15px;
+        font-family: Arial, sans-serif;
+    }
+
+    .descargas-hero {
+        background: linear-gradient(120deg, #064e3b, #059669);
+        color: white;
+        padding: 45px 30px;
+        border-radius: 18px;
+        text-align: center;
+        margin-bottom: 25px;
+    }
+
+    .descargas-hero h1 {
+        font-weight: 700;
+        font-size: 38px;
+    }
+
+    .estadisticas {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+        margin-bottom: 30px;
+    }
+
+    .estadistica {
+        background: #ecfdf5;
+        border: 1px solid #d1fae5;
+        padding: 20px;
+        border-radius: 12px;
+        text-align: center;
+    }
+
+    .estadistica h2 {
+        color: #047857;
+        font-size: 30px;
+        margin: 0;
+    }
+
+    .seccion-titulo {
+        color: #065f46;
+        font-weight: 700;
+        margin: 25px 0 15px;
+    }
+
+    .contenidos-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 20px;
+    }
+
+    .contenido-card {
+        background: white;
+        border: 1px solid #e5e7eb;
+        border-radius: 14px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px #00000010;
+    }
+
+    .contenido-card img {
+        width: 100%;
+        height: 160px;
+        object-fit: cover;
+    }
+
+    .contenido-info {
+        padding: 18px;
+    }
+
+    .contenido-info h5 {
+        color: #064e3b;
+        font-weight: 700;
+    }
+
+    .contenido-info p {
+        color: #64748b;
+        font-size: 14px;
+    }
+
+    .btn-descargar {
+        background: #047857;
+        color: white;
+        border: none;
+        padding: 11px;
+        width: 100%;
+        border-radius: 8px;
+        cursor: pointer;
+    }
+
+    .btn-descargar:hover {
+        background: #065f46;
+        color: white;
+    }
+
+    .historial-tabla {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+    }
+
+    .historial-tabla th {
+        background: #064e3b;
+        color: white;
+        padding: 13px;
+        text-align: left;
+    }
+
+    .historial-tabla td {
+        padding: 13px;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .historial-contenedor {
+        overflow-x: auto;
+        border-radius: 12px;
+    }
+
+    .etiqueta-json {
+        background: #dcfce7;
+        color: #166534;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+    }
+
+    @@media (max-width: 600px) {
+        .estadisticas {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="descargas-contenedor">
+
+    <div class="descargas-hero">
+        <h1>Descargas</h1>
+        <p>Explorá, descargá y conservá información de Costa Rica.</p>
+        <p>Archivos disponibles en formato JSON</p>
+    </div>
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["Error"]
+        </div>
+    }
+
+    <div class="estadisticas">
+
+        <div class="estadistica">
+            <h2>@Model.Historial.Count</h2>
+            <span>Descargas realizadas</span>
+        </div>
+
+        <div class="estadistica">
+            <h2>@Model.Contenidos.Count</h2>
+            <span>Contenidos disponibles</span>
+        </div>
+
+        <div class="estadistica">
+            <h2>JSON</h2>
+            <span>Formato disponible</span>
+        </div>
+
+    </div>
+
+    <h3 class="seccion-titulo">Contenido disponible</h3>
+
+    @if (!Model.UsuarioDemoId.HasValue)
+    {
+        <div class="alert alert-warning">
+            No existe un usuario activo en la base de datos.
+            Se necesita un usuario demo para registrar descargas.
+        </div>
+    }
+
+    @if (!Model.Contenidos.Any())
+    {
+        <div class="alert alert-info">
+            No hay contenido disponible para descargar.
+        </div>
+    }
+
+    <div class="contenidos-grid">
+
+        @foreach (var item in Model.Contenidos)
+        {
+            <div class="contenido-card">
+
+                @if (!string.IsNullOrEmpty(item.ImageUrl))
+                {
+                    <img src="@item.ImageUrl"
+                         alt="@item.Title"
+                         loading="lazy" />
+                }
+
+                <div class="contenido-info">
+
+                    <h5>@item.Title</h5>
+
+                    <p>
+                        @(item.Description?.Length > 110
+                            ? item.Description.Substring(0, 110) + "..."
+                            : item.Description ?? "Información de Costa Rica")
+                    </p>
+
+                    <p>
+                        <strong>Categoría:</strong>
+                        @(item.Category?.Name ?? "General")
+                    </p>
+
+                    <p>
+                        <strong>Destino:</strong>
+                        @(item.Destination?.Name ?? "Costa Rica")
+                    </p>
+
+                    <form asp-controller="Descargas"
+                          asp-action="DescargarJson"
+                          method="post">
+
+                        @Html.AntiForgeryToken()
+
+                        <input type="hidden"
+                               name="mediaId"
+                               value="@item.MediaId" />
+
+                        <button type="submit"
+                                class="btn-descargar"
+                                disabled="@(!Model.UsuarioDemoId.HasValue)">
+                            Descargar JSON
+                        </button>
+
+                    </form>
+
+                </div>
+            </div>
+        }
+
+    </div>
+
+    <h3 class="seccion-titulo">Mi historial de descargas</h3>
+
+    <div class="historial-contenedor">
+
+        <table class="historial-tabla">
+
+            <thead>
+                <tr>
+                    <th>Contenido</th>
+                    <th>Archivo</th>
+                    <th>Formato</th>
+                    <th>Fecha</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                @foreach (var descarga in Model.Historial)
+                {
+                    <tr>
+                        <td>@descarga.Media?.Title</td>
+                        <td>@descarga.FileName</td>
+                        <td>
+                            <span class="etiqueta-json">
+                                @descarga.FileFormat
+                            </span>
+                        </td>
+                        <td>
+                            @descarga.DownloadedAt.ToString("dd/MM/yyyy HH:mm")
+                        </td>
+                    </tr>
+                }
+
+                @if (!Model.Historial.Any())
+                {
+                    <tr>
+                        <td colspan="4" style="text-align:center; padding:25px;">
+                            Todavía no hay descargas registradas.
+                        </td>
+                    </tr>
+                }
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>

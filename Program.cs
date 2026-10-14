@@ -1,5 +1,4 @@
-﻿
-using ExploraCostaRica.Data;
+﻿using ExploraCostaRica.Data;
 using ExploraCostaRica.Services;
 using Microsoft.EntityFrameworkCore;
 
@@ -33,13 +32,15 @@ builder.Services.AddDbContext<ExploraCostaRicaDbContext>(options =>
 builder.Services.AddScoped<IExplorarService, ExplorarService>();
 
 // Servicio de Descargas
-// Se encarga de las consultas, generación de JSON,
-// registro de descargas y administración del historial.
+// Consultas, generación de JSON, registro de descargas
+// y administración del historial.
 builder.Services.AddScoped<IDescargasService, DescargasService>();
 
-// Servicio de noticias externas GNews
-// Utiliza HttpClient para realizar solicitudes HTTP
-// y recibir información JSON desde una API externa.
+
+// ============================================================
+// API EXTERNA: GNEWS
+// ============================================================
+
 builder.Services.AddHttpClient<INoticiasApiService, NoticiasApiService>(
     client =>
     {
@@ -47,6 +48,18 @@ builder.Services.AddHttpClient<INoticiasApiService, NoticiasApiService>(
         client.DefaultRequestHeaders.UserAgent.ParseAdd(
             "ExploraCostaRica/1.0"
         );
+    }
+);
+
+
+// ============================================================
+// API EXTERNA: UNSPLASH (FOTOGRAFÍAS)
+// ============================================================
+
+builder.Services.AddHttpClient<IFotografiasApiService, FotografiasApiService>(
+    client =>
+    {
+        client.Timeout = TimeSpan.FromSeconds(20);
     }
 );
 

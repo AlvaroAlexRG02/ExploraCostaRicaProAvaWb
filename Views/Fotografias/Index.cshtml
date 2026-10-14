@@ -1,0 +1,98 @@
+﻿@model List<ExploraCostaRica.Services.FotografiaDto>
+
+@{
+    ViewData["Title"] = "Fotografías de Costa Rica";
+    string busqueda = ViewBag.Busqueda ?? "";
+    string? error = ViewBag.Error;
+}
+
+<div class="container py-5">
+
+    <div class="text-center mb-5">
+        <h1 class="fw-bold">Explorá Costa Rica</h1>
+        <p class="text-muted">
+            Descubrí los destinos más hermosos de Costa Rica
+            mediante fotografías.
+        </p>
+    </div>
+
+    <form asp-controller="Fotografias"
+          asp-action="Index"
+          method="get"
+          class="row justify-content-center mb-5">
+
+        <div class="col-md-8">
+            <div class="input-group input-group-lg">
+                <input type="text"
+                       name="busqueda"
+                       value="@busqueda"
+                       class="form-control"
+                       placeholder="Ejemplo: Volcán Arenal Costa Rica"
+                       required />
+
+                <button class="btn btn-success" type="submit">
+                    Buscar fotografías
+                </button>
+            </div>
+        </div>
+    </form>
+
+    @if (!string.IsNullOrWhiteSpace(error))
+    {
+        <div class="alert alert-danger">
+            @error
+        </div>
+    }
+
+    @if (Model.Count > 0)
+    {
+        <h3 class="mb-4">
+            Resultados para: @busqueda
+        </h3>
+
+        <div class="row g-4">
+            @foreach (var foto in Model)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 shadow-sm border-0">
+
+                        <a href="@foto.UrlUnsplash"
+                           target="_blank"
+                           rel="noopener noreferrer">
+                            <img src="@foto.UrlImagen"
+                                 class="card-img-top"
+                                 alt="@foto.Descripcion"
+                                 loading="lazy"
+                                 style="height:240px; object-fit:cover;" />
+                        </a>
+
+                        <div class="card-body">
+                            <p class="small text-muted mb-2">
+                                @foto.Descripcion
+                            </p>
+
+                            <p class="mb-0">
+                                Foto de
+                                <a href="@foto.UrlFotografo"
+                                   target="_blank"
+                                   rel="noopener noreferrer">
+                                    @foto.NombreFotografo
+                                </a>
+                                en Unsplash
+                            </p>
+                        </div>
+
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else if (!string.IsNullOrWhiteSpace(busqueda)
+             && string.IsNullOrWhiteSpace(error))
+    {
+        <div class="alert alert-info text-center">
+            No encontramos fotografías para esa búsqueda.
+        </div>
+    }
+
+</div>

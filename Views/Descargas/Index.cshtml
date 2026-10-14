@@ -1,11 +1,14 @@
-﻿
-@model ExploraCostaRica.Controllers.DescargasViewModel
+﻿@model ExploraCostaRica.Models.ViewModels.DescargasViewModel
 
 @{
     ViewData["Title"] = "Descargas";
 }
 
 <style>
+    /* ==========================================
+           DISEÑO GENERAL
+           ========================================== */
+
     .descargas-container {
         max-width: 1150px;
         margin: auto;
@@ -21,10 +24,10 @@
         margin-bottom: 25px;
     }
 
-    .descargas-hero h1 {
-        font-size: 38px;
-        font-weight: bold;
-    }
+        .descargas-hero h1 {
+            font-size: 38px;
+            font-weight: bold;
+        }
 
     .estadisticas {
         display: grid;
@@ -41,16 +44,32 @@
         text-align: center;
     }
 
-    .estadistica h2 {
-        color: #047857;
-        font-size: 30px;
-    }
+        .estadistica h2 {
+            color: #047857;
+            font-size: 30px;
+        }
 
     .titulo-seccion {
         color: #065f46;
         font-weight: bold;
         margin: 30px 0 18px;
     }
+
+    /* ==========================================
+           IMPORTAR JSON
+           ========================================== */
+
+    .upload-section {
+        background: #f0fdf4;
+        border: 1px solid #bbf7d0;
+        border-radius: 14px;
+        padding: 25px;
+        margin-bottom: 30px;
+    }
+
+    /* ==========================================
+           CONTENIDOS DISPONIBLES
+           ========================================== */
 
     .contenidos-grid {
         display: grid;
@@ -64,27 +83,32 @@
         border-radius: 14px;
         overflow: hidden;
         box-shadow: 0 4px 12px #00000010;
+        transition: transform 0.2s ease;
     }
 
-    .contenido-card img {
-        width: 100%;
-        height: 160px;
-        object-fit: cover;
-    }
+        .contenido-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .contenido-card img {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+        }
 
     .contenido-info {
         padding: 18px;
     }
 
-    .contenido-info h5 {
-        color: #064e3b;
-        font-weight: bold;
-    }
+        .contenido-info h5 {
+            color: #064e3b;
+            font-weight: bold;
+        }
 
-    .contenido-info p {
-        color: #64748b;
-        font-size: 14px;
-    }
+        .contenido-info p {
+            color: #64748b;
+            font-size: 14px;
+        }
 
     .btn-descargar {
         width: 100%;
@@ -93,11 +117,190 @@
         border: none;
         padding: 11px;
         border-radius: 8px;
+        cursor: pointer;
     }
 
-    .btn-descargar:hover {
-        background: #065f46;
-        color: white;
+        .btn-descargar:hover {
+            background: #065f46;
+            color: white;
+        }
+
+        .btn-descargar:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+    /* ==========================================
+           HISTORIAL: FILTROS COMPACTOS
+           ========================================== */
+
+    .historial-buscador {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 18px;
+        margin-bottom: 20px;
+        box-shadow: 0 3px 12px rgba(0,0,0,0.035);
+    }
+
+    .historial-barra {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .historial-search-box {
+        position: relative;
+        flex: 1;
+        min-width: 220px;
+    }
+
+        .historial-search-box input {
+            width: 100%;
+            padding: 12px 15px 12px 43px;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            outline: none;
+            background: #fff;
+        }
+
+            .historial-search-box input:focus {
+                border-color: #059669;
+                box-shadow: 0 0 0 3px rgba(5,150,105,0.12);
+            }
+
+    .historial-search-icon {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 18px;
+        pointer-events: none;
+    }
+
+    .btn-filtro-historial {
+        background: #fff;
+        border: 1px solid #cbd5e1;
+        color: #334155;
+        border-radius: 10px;
+        padding: 11px 16px;
+        font-weight: 600;
+        cursor: pointer;
+        white-space: nowrap;
+    }
+
+        .btn-filtro-historial:hover,
+        .btn-filtro-historial[aria-expanded="true"] {
+            border-color: #059669;
+            background: #ecfdf5;
+            color: #065f46;
+        }
+
+    .historial-orden {
+        min-width: 165px;
+        max-width: 200px;
+        border-radius: 10px;
+        padding: 11px;
+        border: 1px solid #cbd5e1;
+        background: #fff;
+    }
+
+    .historial-panel {
+        margin-top: 16px;
+        padding: 18px;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        background: #f8fafc;
+    }
+
+        .historial-panel[hidden] {
+            display: none !important;
+        }
+
+    .historial-panel-titulo {
+        color: #065f46;
+        font-weight: 700;
+        margin-bottom: 12px;
+    }
+
+    .historial-fechas {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .historial-fecha-opcion {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 9px 13px;
+        background: #fff;
+        border: 1px solid #cbd5e1;
+        border-radius: 30px;
+        cursor: pointer;
+        font-size: 14px;
+    }
+
+        .historial-fecha-opcion:has(input:checked) {
+            background: #d1fae5;
+            border-color: #059669;
+            color: #065f46;
+            font-weight: 600;
+        }
+
+        .historial-fecha-opcion input {
+            accent-color: #047857;
+        }
+
+    .historial-rango {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 15px;
+    }
+
+        .historial-rango > div {
+            flex: 1;
+            min-width: 180px;
+        }
+
+        .historial-rango input {
+            border-radius: 9px;
+        }
+
+    .historial-resumen {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 14px;
+    }
+
+    .historial-contador {
+        color: #64748b;
+        font-size: 13px;
+    }
+
+    .btn-limpiar-historial {
+        background: transparent;
+        border: none;
+        color: #047857;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: underline;
+    }
+
+    /* ==========================================
+           TABLA DEL HISTORIAL
+           ========================================== */
+
+    .historial-container {
+        overflow-x: auto;
+        border-radius: 12px;
+        border: 1px solid #e5e7eb;
     }
 
     .historial-tabla {
@@ -106,63 +309,148 @@
         background: white;
     }
 
-    .historial-tabla th {
-        background: #064e3b;
-        color: white;
-        padding: 14px;
-        text-align: left;
-    }
+        .historial-tabla th {
+            background: #064e3b;
+            color: white;
+            padding: 14px;
+            text-align: left;
+        }
 
-    .historial-tabla td {
-        padding: 12px;
-        border-bottom: 1px solid #e5e7eb;
-        vertical-align: middle;
-    }
+        .historial-tabla td {
+            padding: 12px;
+            border-bottom: 1px solid #e5e7eb;
+            vertical-align: middle;
+        }
 
-    .historial-container {
-        overflow-x: auto;
-        border-radius: 12px;
-        border: 1px solid #e5e7eb;
+    .historial-fila[hidden] {
+        display: none !important;
     }
 
     .acciones {
         display: flex;
-        gap: 6px;
         flex-wrap: wrap;
+        gap: 6px;
     }
 
-    .acciones form {
-        margin: 0;
-    }
+        .acciones form {
+            margin: 0;
+        }
 
-    .acciones .btn {
-        font-size: 12px;
-        white-space: nowrap;
-    }
+        .acciones .btn {
+            font-size: 12px;
+            white-space: nowrap;
+        }
 
-    .upload-section {
-        background: #f0fdf4;
-        border: 1px solid #bbf7d0;
-        border-radius: 14px;
+    .historial-vacio {
         padding: 25px;
-        margin-bottom: 30px;
+        text-align: center;
+        color: #64748b;
     }
+
+    /* ==========================================
+           MODAL DE ELIMINACIÓN
+           ========================================== */
+
+    .modal-eliminar .modal-content {
+        border: none;
+        border-radius: 18px;
+        overflow: hidden;
+        box-shadow: 0 12px 30px rgba(0,0,0,0.18);
+    }
+
+    .modal-eliminar .modal-header {
+        background: linear-gradient(120deg, #064e3b, #059669);
+        color: white;
+        border-bottom: none;
+        padding: 18px 22px;
+    }
+
+    .modal-eliminar .modal-title {
+        font-weight: 700;
+    }
+
+    .modal-eliminar .modal-body {
+        padding: 24px 22px 12px;
+        color: #334155;
+    }
+
+    .modal-eliminar .modal-footer {
+        border-top: none;
+        padding: 16px 22px 22px;
+    }
+
+    .detalle-eliminacion {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 14px;
+        margin-top: 15px;
+        overflow-wrap: anywhere;
+    }
+
+    .aviso-eliminacion {
+        color: #64748b;
+        font-size: 13px;
+        margin-top: 12px;
+    }
+
+    .btn-cancelar-modal {
+        background: #e5e7eb;
+        color: #111827;
+        border: none;
+        border-radius: 10px;
+        padding: 10px 18px;
+        font-weight: 600;
+    }
+
+    .btn-eliminar-modal {
+        background: #dc2626;
+        color: white;
+        border: none;
+        border-radius: 10px;
+        padding: 10px 18px;
+        font-weight: 600;
+    }
+
+        .btn-eliminar-modal:hover {
+            background: #b91c1c;
+        }
+
+        .btn-eliminar-modal:disabled {
+            opacity: 0.6;
+        }
 
     @@media (max-width: 600px) {
         .estadisticas {
             grid-template-columns: 1fr;
+        }
+
+        .descargas-hero h1 {
+            font-size: 30px;
+        }
+
+        .historial-barra {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .historial-orden {
+            max-width: none;
+            width: 100%;
         }
     }
 </style>
 
 <div class="descargas-container">
 
+    <!-- ENCABEZADO -->
     <div class="descargas-hero">
         <h1>Descargas</h1>
         <p>Explorá, descargá y conservá información de Costa Rica.</p>
         <p>Archivos disponibles en formato JSON</p>
     </div>
 
+    <!-- MENSAJES -->
     @if (TempData["Exito"] != null)
     {
         <div class="alert alert-success">
@@ -177,7 +465,9 @@
         </div>
     }
 
+    <!-- ESTADÍSTICAS -->
     <div class="estadisticas">
+
         <div class="estadistica">
             <h2>@Model.Historial.Count</h2>
             <span>Descargas realizadas</span>
@@ -192,9 +482,10 @@
             <h2>JSON</h2>
             <span>Formato disponible</span>
         </div>
+
     </div>
 
-    <!-- IMPORTACIÓN DE JSON -->
+    <!-- IMPORTACIÓN JSON -->
     <section class="upload-section">
         <h3 class="titulo-seccion mt-0">
             📤 Importar archivo JSON
@@ -228,15 +519,19 @@
             <button type="submit" class="btn btn-success">
                 📤 Subir JSON
             </button>
+
         </form>
     </section>
 
-    <h3 class="titulo-seccion">Contenido disponible</h3>
+    <!-- CONTENIDO DISPONIBLE: SIN FILTROS -->
+    <h3 class="titulo-seccion">
+        Contenido disponible
+    </h3>
 
     @if (!Model.UsuarioDemoId.HasValue)
     {
         <div class="alert alert-warning">
-            No existe un usuario demo activo para descargar.
+            No existe un usuario demo activo para registrar descargas.
         </div>
     }
 
@@ -248,6 +543,7 @@
     }
 
     <div class="contenidos-grid">
+
         @foreach (var item in Model.Contenidos)
         {
             <div class="contenido-card">
@@ -260,6 +556,7 @@
                 }
 
                 <div class="contenido-info">
+
                     <h5>@item.Title</h5>
 
                     <p>
@@ -293,16 +590,157 @@
                                 disabled="@(!Model.UsuarioDemoId.HasValue)">
                             ⬇ Descargar JSON
                         </button>
+
                     </form>
+
                 </div>
+
             </div>
         }
+
     </div>
 
-    <h3 class="titulo-seccion">Mi historial de descargas</h3>
+    <!-- HISTORIAL -->
+    <h3 class="titulo-seccion">
+        Mi historial de descargas
+    </h3>
 
+    <!-- BUSCADOR Y FILTROS COMPACTOS -->
+    <section class="historial-buscador"
+             aria-label="Filtros del historial">
+
+        <div class="historial-barra">
+
+            <div class="historial-search-box">
+                <span class="historial-search-icon" aria-hidden="true">
+                    🔎
+                </span>
+
+                <input type="search"
+                       id="buscarHistorial"
+                       placeholder="Buscar en mis descargas..."
+                       aria-label="Buscar en el historial"
+                       autocomplete="off" />
+            </div>
+
+            <button type="button"
+                    id="btnMostrarFiltros"
+                    class="btn-filtro-historial"
+                    aria-expanded="false"
+                    aria-controls="panelFiltrosHistorial">
+                ⚙ Filtros ▾
+            </button>
+
+            <select id="ordenarHistorial"
+                    class="historial-orden"
+                    aria-label="Ordenar historial">
+                <option value="recientes">Más recientes</option>
+                <option value="antiguos">Más antiguos</option>
+            </select>
+
+        </div>
+
+        <!-- PANEL DESPLEGABLE -->
+        <div id="panelFiltrosHistorial"
+             class="historial-panel"
+             hidden>
+
+            <div class="historial-panel-titulo">
+                Fecha de descarga
+            </div>
+
+            <div class="historial-fechas">
+
+                <label class="historial-fecha-opcion">
+                    <input type="radio"
+                           name="periodoHistorial"
+                           value="todas"
+                           checked />
+                    Cualquier fecha
+                </label>
+
+                <label class="historial-fecha-opcion">
+                    <input type="radio"
+                           name="periodoHistorial"
+                           value="hoy" />
+                    Hoy
+                </label>
+
+                <label class="historial-fecha-opcion">
+                    <input type="radio"
+                           name="periodoHistorial"
+                           value="7" />
+                    Últimos 7 días
+                </label>
+
+                <label class="historial-fecha-opcion">
+                    <input type="radio"
+                           name="periodoHistorial"
+                           value="30" />
+                    Últimos 30 días
+                </label>
+
+                <label class="historial-fecha-opcion">
+                    <input type="radio"
+                           name="periodoHistorial"
+                           value="personalizado" />
+                    Personalizado
+                </label>
+
+            </div>
+
+            <div class="historial-rango"
+                 id="rangoPersonalizado"
+                 hidden>
+
+                <div>
+                    <label for="historialDesde"
+                           class="form-label">
+                        Desde
+                    </label>
+
+                    <input type="date"
+                           id="historialDesde"
+                           class="form-control" />
+                </div>
+
+                <div>
+                    <label for="historialHasta"
+                           class="form-label">
+                        Hasta
+                    </label>
+
+                    <input type="date"
+                           id="historialHasta"
+                           class="form-control" />
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="historial-resumen">
+
+            <span id="contadorHistorial"
+                  class="historial-contador">
+                @Model.Historial.Count registros
+            </span>
+
+            <button type="button"
+                    id="limpiarHistorial"
+                    class="btn-limpiar-historial">
+                Limpiar filtros
+            </button>
+
+        </div>
+
+    </section>
+
+    <!-- TABLA DEL HISTORIAL -->
     <div class="historial-container">
+
         <table class="historial-tabla">
+
             <thead>
                 <tr>
                     <th>Contenido</th>
@@ -313,10 +751,16 @@
                 </tr>
             </thead>
 
-            <tbody>
+            <tbody id="historialBody">
+
                 @foreach (var descarga in Model.Historial)
                 {
-                    <tr>
+                    <tr class="historial-fila"
+                        data-contenido="@(descarga.Media?.Title ?? "")"
+                        data-archivo="@descarga.FileName"
+                        data-fecha="@descarga.DownloadedAt.ToString("yyyy-MM-dd")"
+                        data-orden="@descarga.DownloadedAt.ToString("yyyy-MM-ddTHH:mm:ss.fffffff")">
+
                         <td>@descarga.Media?.Title</td>
 
                         <td>@descarga.FileName</td>
@@ -334,15 +778,17 @@
                         <td>
                             <div class="acciones">
 
+                                <!-- ABRIR -->
                                 <a asp-controller="Descargas"
                                    asp-action="Abrir"
                                    asp-route-id="@descarga.DownloadId"
                                    target="_blank"
-                                   rel="noopener"
+                                   rel="noopener noreferrer"
                                    class="btn btn-outline-primary">
                                     👁 Abrir
                                 </a>
 
+                                <!-- DESCARGAR NUEVAMENTE -->
                                 <form asp-controller="Descargas"
                                       asp-action="DescargarJson"
                                       method="post">
@@ -357,12 +803,14 @@
                                             class="btn btn-outline-success">
                                         ⬇ Descargar
                                     </button>
+
                                 </form>
 
-                                <form asp-controller="Descargas"
+                                <!-- ELIMINAR CON MODAL -->
+                                <form id="form-eliminar-@descarga.DownloadId"
+                                      asp-controller="Descargas"
                                       asp-action="Eliminar"
-                                      method="post"
-                                      onsubmit="return confirm('¿Eliminar este registro del historial?');">
+                                      method="post">
 
                                     @Html.AntiForgeryToken()
 
@@ -370,10 +818,16 @@
                                            name="id"
                                            value="@descarga.DownloadId" />
 
-                                    <button type="submit"
-                                            class="btn btn-outline-danger">
+                                    <button type="button"
+                                            class="btn btn-outline-danger"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#modalEliminarDescarga"
+                                            data-form-id="form-eliminar-@descarga.DownloadId"
+                                            data-archivo="@descarga.FileName"
+                                            data-contenido="@descarga.Media?.Title">
                                         🗑 Eliminar
                                     </button>
+
                                 </form>
 
                             </div>
@@ -381,16 +835,318 @@
                     </tr>
                 }
 
-                @if (!Model.Historial.Any())
-                {
-                    <tr>
-                        <td colspan="5" class="text-center p-4">
-                            Todavía no hay descargas registradas.
-                        </td>
-                    </tr>
-                }
             </tbody>
+
         </table>
+
+        <div id="historialVacio"
+             class="historial-vacio"
+             hidden>
+            No encontramos descargas con esos filtros.
+        </div>
+
     </div>
 
 </div>
+
+<!-- MODAL DE ELIMINACIÓN -->
+<div class="modal fade modal-eliminar"
+     id="modalEliminarDescarga"
+     tabindex="-1"
+     aria-labelledby="modalEliminarDescargaLabel"
+     aria-hidden="true">
+
+    <div class="modal-dialog modal-dialog-centered">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h5 class="modal-title"
+                    id="modalEliminarDescargaLabel">
+                    🗑 Eliminar registro
+                </h5>
+
+                <button type="button"
+                        class="btn-close btn-close-white"
+                        data-bs-dismiss="modal"
+                        aria-label="Cerrar">
+                </button>
+
+            </div>
+
+            <div class="modal-body">
+
+                <p>
+                    ¿Estás segura de que querés eliminar
+                    este registro del historial?
+                </p>
+
+                <div class="detalle-eliminacion">
+
+                    <p class="mb-2">
+                        <strong>Contenido:</strong>
+                        <span id="textoContenidoEliminar">-</span>
+                    </p>
+
+                    <p class="mb-0">
+                        <strong>Archivo:</strong>
+                        <span id="textoArchivoEliminar">-</span>
+                    </p>
+
+                </div>
+
+                <p class="aviso-eliminacion">
+                    Solo se eliminará el registro del historial.
+                    El contenido original seguirá disponible.
+                </p>
+
+            </div>
+
+            <div class="modal-footer">
+
+                <button type="button"
+                        class="btn-cancelar-modal"
+                        data-bs-dismiss="modal">
+                    Cancelar
+                </button>
+
+                <button type="button"
+                        id="btnConfirmarEliminar"
+                        class="btn-eliminar-modal">
+                    🗑 Sí, eliminar
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const buscar = document.getElementById("buscarHistorial");
+        const ordenar = document.getElementById("ordenarHistorial");
+        const limpiar = document.getElementById("limpiarHistorial");
+        const contador = document.getElementById("contadorHistorial");
+
+        const btnFiltros = document.getElementById("btnMostrarFiltros");
+        const panelFiltros = document.getElementById("panelFiltrosHistorial");
+
+        const rangoPersonalizado =
+            document.getElementById("rangoPersonalizado");
+
+        const fechaDesde = document.getElementById("historialDesde");
+        const fechaHasta = document.getElementById("historialHasta");
+
+        const body = document.getElementById("historialBody");
+        const vacio = document.getElementById("historialVacio");
+
+        const filas = Array.from(
+            body.querySelectorAll(".historial-fila")
+        );
+
+        function normalizar(texto) {
+            return (texto || "")
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "")
+                .toLowerCase()
+                .trim();
+        }
+
+        function fechaLocal(date) {
+            const anio = date.getFullYear();
+            const mes = String(date.getMonth() + 1).padStart(2, "0");
+            const dia = String(date.getDate()).padStart(2, "0");
+
+            return `${anio}-${mes}-${dia}`;
+        }
+
+        function obtenerPeriodo() {
+            return document.querySelector(
+                'input[name="periodoHistorial"]:checked'
+            ).value;
+        }
+
+        function cumplePeriodo(fecha) {
+            const periodo = obtenerPeriodo();
+
+            if (periodo === "todas") {
+                return true;
+            }
+
+            if (!fecha) {
+                return false;
+            }
+
+            const hoy = new Date();
+            hoy.setHours(0, 0, 0, 0);
+
+            if (periodo === "hoy") {
+                return fecha === fechaLocal(hoy);
+            }
+
+            if (periodo === "7" || periodo === "30") {
+                const dias = Number(periodo);
+
+                const inicio = new Date(hoy);
+                inicio.setDate(inicio.getDate() - (dias - 1));
+
+                return fecha >= fechaLocal(inicio) &&
+                       fecha <= fechaLocal(hoy);
+            }
+
+            if (periodo === "personalizado") {
+                return (!fechaDesde.value || fecha >= fechaDesde.value) &&
+                       (!fechaHasta.value || fecha <= fechaHasta.value);
+            }
+
+            return true;
+        }
+
+        function ordenarFilas() {
+            filas.sort(function (a, b) {
+                const fechaA = a.dataset.orden || "";
+                const fechaB = b.dataset.orden || "";
+
+                return ordenar.value === "antiguos"
+                    ? fechaA.localeCompare(fechaB)
+                    : fechaB.localeCompare(fechaA);
+            });
+
+            filas.forEach(function (fila) {
+                body.appendChild(fila);
+            });
+        }
+
+        function aplicarFiltros() {
+            const texto = normalizar(buscar.value);
+
+            let visibles = 0;
+
+            filas.forEach(function (fila) {
+                const contenido = normalizar(fila.dataset.contenido);
+                const archivo = normalizar(fila.dataset.archivo);
+                const fecha = fila.dataset.fecha || "";
+
+                const coincideBusqueda =
+                    contenido.includes(texto) ||
+                    archivo.includes(texto);
+
+                const mostrar =
+                    coincideBusqueda && cumplePeriodo(fecha);
+
+                fila.hidden = !mostrar;
+
+                if (mostrar) {
+                    visibles++;
+                }
+            });
+
+            contador.textContent =
+                `${visibles} de ${filas.length} registros`;
+
+            vacio.hidden = visibles !== 0;
+        }
+
+        // Abrir/cerrar filtros
+        btnFiltros.addEventListener("click", function () {
+            const abrir = panelFiltros.hidden;
+
+            panelFiltros.hidden = !abrir;
+            btnFiltros.setAttribute(
+                "aria-expanded",
+                abrir.toString()
+            );
+        });
+
+        // Cambiar período
+        document.querySelectorAll(
+            'input[name="periodoHistorial"]'
+        ).forEach(function (radio) {
+            radio.addEventListener("change", function () {
+                rangoPersonalizado.hidden =
+                    obtenerPeriodo() !== "personalizado";
+
+                aplicarFiltros();
+            });
+        });
+
+        buscar.addEventListener("input", aplicarFiltros);
+
+        ordenar.addEventListener("change", function () {
+            ordenarFilas();
+            aplicarFiltros();
+        });
+
+        fechaDesde.addEventListener("change", aplicarFiltros);
+        fechaHasta.addEventListener("change", aplicarFiltros);
+
+        limpiar.addEventListener("click", function () {
+            buscar.value = "";
+            ordenar.value = "recientes";
+
+            document.querySelector(
+                'input[name="periodoHistorial"][value="todas"]'
+            ).checked = true;
+
+            fechaDesde.value = "";
+            fechaHasta.value = "";
+            rangoPersonalizado.hidden = true;
+
+            ordenarFilas();
+            aplicarFiltros();
+        });
+
+        ordenarFilas();
+        aplicarFiltros();
+
+        // ==========================================
+        // MODAL DE ELIMINACIÓN
+        // ==========================================
+
+        const modal = document.getElementById("modalEliminarDescarga");
+        const btnConfirmar = document.getElementById("btnConfirmarEliminar");
+        const textoArchivo = document.getElementById("textoArchivoEliminar");
+        const textoContenido = document.getElementById("textoContenidoEliminar");
+
+        let formularioActual = null;
+
+        modal.addEventListener("show.bs.modal", function (event) {
+            const boton = event.relatedTarget;
+
+            if (!boton) {
+                return;
+            }
+
+            formularioActual = document.getElementById(
+                boton.getAttribute("data-form-id")
+            );
+
+            textoArchivo.textContent =
+                boton.getAttribute("data-archivo") || "-";
+
+            textoContenido.textContent =
+                boton.getAttribute("data-contenido") || "-";
+
+            btnConfirmar.disabled = false;
+        });
+
+        btnConfirmar.addEventListener("click", function () {
+            if (!formularioActual) {
+                return;
+            }
+
+            btnConfirmar.disabled = true;
+            formularioActual.submit();
+        });
+
+        modal.addEventListener("hidden.bs.modal", function () {
+            formularioActual = null;
+            btnConfirmar.disabled = false;
+        });
+    });
+</script>

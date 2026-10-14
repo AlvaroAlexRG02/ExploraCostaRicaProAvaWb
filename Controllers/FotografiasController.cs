@@ -1,4 +1,5 @@
-﻿using ExploraCostaRica.Services;
+﻿using ExploraCostaRica.Models.DTOs;
+using ExploraCostaRica.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ExploraCostaRica.Controllers
@@ -13,6 +14,7 @@ namespace ExploraCostaRica.Controllers
             _fotografiasService = fotografiasService;
         }
 
+        // Página con el buscador de fotografías.
         [HttpGet]
         public async Task<IActionResult> Index(string? busqueda)
         {
@@ -32,17 +34,51 @@ namespace ExploraCostaRica.Controllers
                 catch (HttpRequestException)
                 {
                     ViewBag.Error =
-                        "No fue posible consultar Unsplash. " +
-                        "Verificá la conexión y la API Key.";
+                        "No fue posible consultar Unsplash.";
                 }
                 catch (InvalidOperationException)
                 {
                     ViewBag.Error =
-                        "No se pudo completar la consulta de fotografías.";
+                        "No se pudo completar la consulta.";
                 }
             }
 
             return View(fotografias);
+        }
+
+        // Endpoint propio que devuelve fotografías como JSON.
+        // GET /api/fotografias?busqueda=Volcan Arenal Costa Rica
+        [HttpGet("/api/fotografias")]
+        [Produces("application/json")]
+        [ProducesResponseType(typeof(List<MediaItemDto>), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(502)]
+        public async Task<IActionResult> ObtenerJson(
+            [FromQuery] string? busqueda)
+        {
+            if (string.IsNullOrWhiteSpace(busqueda))
+            {
+                return BadRequest(new
+                {
+                    mensaje = "Debés indicar un destino para buscar."
+                });
+            }
+
+            try
+            {
+                var resultados =
+                    await _fotografiasService.BuscarContenidoAsync(
+                        busqueda);
+
+                return Ok(resultados);
+            }
+            catch (HttpRequestException)
+            {
+                return StatusCode(502, new
+                {
+                    mensaje = "No fue posible consultar Unsplash."
+                });
+            }
         }
     }
 }

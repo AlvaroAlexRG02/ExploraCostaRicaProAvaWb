@@ -1,4 +1,5 @@
-﻿@model ExploraCostaRica.Controllers.DescargasViewModel
+﻿
+@model ExploraCostaRica.Controllers.DescargasViewModel
 
 @{
     ViewData["Title"] = "Descargas";
@@ -20,10 +21,10 @@
         margin-bottom: 25px;
     }
 
-        .descargas-hero h1 {
-            font-size: 38px;
-            font-weight: bold;
-        }
+    .descargas-hero h1 {
+        font-size: 38px;
+        font-weight: bold;
+    }
 
     .estadisticas {
         display: grid;
@@ -40,10 +41,10 @@
         text-align: center;
     }
 
-        .estadistica h2 {
-            color: #047857;
-            font-size: 30px;
-        }
+    .estadistica h2 {
+        color: #047857;
+        font-size: 30px;
+    }
 
     .titulo-seccion {
         color: #065f46;
@@ -65,25 +66,25 @@
         box-shadow: 0 4px 12px #00000010;
     }
 
-        .contenido-card img {
-            width: 100%;
-            height: 160px;
-            object-fit: cover;
-        }
+    .contenido-card img {
+        width: 100%;
+        height: 160px;
+        object-fit: cover;
+    }
 
     .contenido-info {
         padding: 18px;
     }
 
-        .contenido-info h5 {
-            color: #064e3b;
-            font-weight: bold;
-        }
+    .contenido-info h5 {
+        color: #064e3b;
+        font-weight: bold;
+    }
 
-        .contenido-info p {
-            color: #64748b;
-            font-size: 14px;
-        }
+    .contenido-info p {
+        color: #64748b;
+        font-size: 14px;
+    }
 
     .btn-descargar {
         width: 100%;
@@ -94,10 +95,10 @@
         border-radius: 8px;
     }
 
-        .btn-descargar:hover {
-            background: #065f46;
-            color: white;
-        }
+    .btn-descargar:hover {
+        background: #065f46;
+        color: white;
+    }
 
     .historial-tabla {
         width: 100%;
@@ -105,18 +106,18 @@
         background: white;
     }
 
-        .historial-tabla th {
-            background: #064e3b;
-            color: white;
-            padding: 14px;
-            text-align: left;
-        }
+    .historial-tabla th {
+        background: #064e3b;
+        color: white;
+        padding: 14px;
+        text-align: left;
+    }
 
-        .historial-tabla td {
-            padding: 12px;
-            border-bottom: 1px solid #e5e7eb;
-            vertical-align: middle;
-        }
+    .historial-tabla td {
+        padding: 12px;
+        border-bottom: 1px solid #e5e7eb;
+        vertical-align: middle;
+    }
 
     .historial-container {
         overflow-x: auto;
@@ -130,14 +131,22 @@
         flex-wrap: wrap;
     }
 
-        .acciones form {
-            margin: 0;
-        }
+    .acciones form {
+        margin: 0;
+    }
 
-        .acciones .btn {
-            font-size: 12px;
-            white-space: nowrap;
-        }
+    .acciones .btn {
+        font-size: 12px;
+        white-space: nowrap;
+    }
+
+    .upload-section {
+        background: #f0fdf4;
+        border: 1px solid #bbf7d0;
+        border-radius: 14px;
+        padding: 25px;
+        margin-bottom: 30px;
+    }
 
     @@media (max-width: 600px) {
         .estadisticas {
@@ -184,6 +193,43 @@
             <span>Formato disponible</span>
         </div>
     </div>
+
+    <!-- IMPORTACIÓN DE JSON -->
+    <section class="upload-section">
+        <h3 class="titulo-seccion mt-0">
+            📤 Importar archivo JSON
+        </h3>
+
+        <p class="text-muted">
+            Seleccioná un archivo JSON para importar
+            su información a Explora Costa Rica.
+        </p>
+
+        <form asp-controller="Descargas"
+              asp-action="SubirJson"
+              method="post"
+              enctype="multipart/form-data">
+
+            @Html.AntiForgeryToken()
+
+            <div class="mb-3">
+                <label for="archivo" class="form-label">
+                    Seleccionar archivo JSON
+                </label>
+
+                <input type="file"
+                       id="archivo"
+                       name="archivo"
+                       accept=".json,application/json"
+                       class="form-control"
+                       required />
+            </div>
+
+            <button type="submit" class="btn btn-success">
+                📤 Subir JSON
+            </button>
+        </form>
+    </section>
 
     <h3 class="titulo-seccion">Contenido disponible</h3>
 
@@ -338,8 +384,7 @@
                 @if (!Model.Historial.Any())
                 {
                     <tr>
-                        <td colspan="5"
-                            class="text-center p-4">
+                        <td colspan="5" class="text-center p-4">
                             Todavía no hay descargas registradas.
                         </td>
                     </tr>

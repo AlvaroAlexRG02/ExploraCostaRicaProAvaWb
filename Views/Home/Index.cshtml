@@ -254,7 +254,7 @@
         color: #666;
     }
 
-    .btn-surprise {
+       .btn-surprise {
         background: #198754;
         color: white;
         border: none;
@@ -262,6 +262,13 @@
         padding: 12px 25px;
         font-weight: 600;
         cursor: pointer;
+        display: inline-block;
+        text-decoration: none;
+    }
+
+    .btn-surprise:hover {
+        background: #146c43;
+        color: white;
     }
 
     /* MENSAJE SIN DATOS */
@@ -543,11 +550,13 @@
 
         </div>
 
-        <button type="button"
-                class="btn-surprise"
-                onclick="surpriseMe()">
+        @* Selección aleatoria real desde SQL Server
+           (DestinationsController -> Surprise) *@
+        <a class="btn-surprise"
+           asp-controller="Destinations"
+           asp-action="Surprise">
             Sorpréndeme
-        </button>
+        </a>
 
     </section>
 
@@ -656,60 +665,6 @@
             .textContent =
             number + " resultados";
     }
-
-
-    // ========================================================
-    // BOTÓN SORPRÉNDEME
-    // ========================================================
-
-    function surpriseMe() {
-
-        const visibleCards =
-            Array.from(
-                document.querySelectorAll(".media-card")
-            )
-            .filter(card =>
-                card.style.display !== "none"
-            );
-
-        if (visibleCards.length === 0) {
-
-            alert(
-                "No hay destinos disponibles con los filtros actuales."
-            );
-
-            return;
-        }
-
-        document
-            .querySelectorAll(".media-card")
-            .forEach(card =>
-                card.classList.remove("highlight-card")
-            );
-
-
-        const randomIndex =
-            Math.floor(
-                Math.random() *
-                visibleCards.length
-            );
-
-
-        const selected =
-            visibleCards[randomIndex];
-
-
-        selected.classList.add(
-            "highlight-card"
-        );
-
-
-        selected.scrollIntoView({
-            behavior: "smooth",
-            block: "center"
-        });
-    }
-
 
     // Buscar también con ENTER
 

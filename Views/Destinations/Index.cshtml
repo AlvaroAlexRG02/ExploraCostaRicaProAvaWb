@@ -1,0 +1,119 @@
+﻿@model ExploraCostaRica.Models.ViewModels.DestinationIndexViewModel
+
+@{
+    ViewData["Title"] = "Destinos";
+
+    var f = Model.Filter;
+}
+
+<link rel="stylesheet" href="~/css/destinations.css" asp-append-version="true" />
+
+<div class="dest-page">
+
+    @* Mensaje cuando Sorpréndeme no encontró destinos *@
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-warning mt-3">
+            @TempData["Error"]
+        </div>
+    }
+
+    <!-- ===================== ENCABEZADO + BUSCADOR ===================== -->
+    @* Formulario GET: la URL queda así
+       /Destinations?Search=volcan&Province=Alajuela *@
+    <section class="dest-hero">
+        <h1>Destinos de Costa Rica</h1>
+        <p>Volcanes, playas, bosques y pueblos para tu próxima aventura.</p>
+
+        <form method="get" asp-controller="Destinations" asp-action="Index" class="dest-search">
+            <span class="dest-search-icon">🔍</span>
+
+            <input type="text" name="Search" value="@f.Search"
+                   placeholder="Buscar destino o provincia..." />
+
+            @* Conserva la provincia elegida al buscar *@
+            @if (!string.IsNullOrWhiteSpace(f.Province))
+            {
+                <input type="hidden" name="Province" value="@f.Province" />
+            }
+
+            <button type="submit">Buscar</button>
+        </form>
+
+        <!-- Pastillas por provincia (enlaces que conservan la búsqueda) -->
+        <div class="dest-pills">
+            <a class="dest-pill @(string.IsNullOrWhiteSpace(f.Province) ? "active" : "")"
+               asp-action="Index" asp-route-Search="@f.Search">Todas</a>
+
+            @foreach (var province in Model.Provinces)
+            {
+                <a class="dest-pill @(f.Province == province ? "active" : "")"
+                   asp-action="Index" asp-route-Search="@f.Search" asp-route-Province="@province">
+                    @province
+                </a>
+            }
+        </div>
+    </section>
+
+    <!-- ===================== SORPRÉNDEME ===================== -->
+    <section class="dest-surprise">
+        <div>
+            <h3>🎲 ¿No sabes a dónde ir?</h3>
+            <p>Deja que Explora Costa Rica elija un destino por ti.</p>
+        </div>
+
+        <a class="dest-btn-primary" asp-action="Surprise">Sorpréndeme</a>
+    </section>
+
+    <!-- ===================== DESTACADOS ===================== -->
+    @* Solo se muestran cuando no hay filtros, para no repetir tarjetas *@
+    @if (!f.HasActiveFilter && Model.Featured.Any())
+    {
+        <section class="dest-section">
+            <h2>★ Destinos destacados</h2>
+
+            <div class="dest-grid">
+                @foreach (var destination in Model.Featured)
+                {
+                    <partial name="_DestinationCard" model="destination" />
+                }
+            </div>
+        </section>
+    }
+
+    <!-- ===================== TODOS LOS DESTINOS ===================== -->
+    <section class="dest-section">
+        <div class="dest-section-header">
+            <h2>@(f.HasActiveFilter ? "Resultados" : "Todos los destinos")</h2>
+
+            <span class="text-muted">
+                @Model.TotalResults @(Model.TotalResults == 1 ? "destino" : "destinos")
+                @if (!string.IsNullOrWhiteSpace(f.Search))
+                {
+                    <text>para “@f.Search”</text>
+                }
+            </span>
+        </div>
+
+        @if (!Model.Destinations.Any())
+        {
+            <!-- Estado "sin resultados" -->
+            <div class="dest-empty">
+                <div class="dest-empty-icon">🧭</div>
+                <h4>No encontramos destinos</h4>
+                <p>Prueba con otra palabra o elige otra provincia.</p>
+                <a asp-action="Index" class="dest-btn-primary">Ver todos los destinos</a>
+            </div>
+        }
+        else
+        {
+            <div class="dest-grid">
+                @foreach (var destination in Model.Destinations)
+                {
+                    <partial name="_DestinationCard" model="destination" />
+                }
+            </div>
+        }
+    </section>
+
+</div>

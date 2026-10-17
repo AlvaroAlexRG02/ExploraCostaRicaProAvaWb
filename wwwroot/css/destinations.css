@@ -1,0 +1,453 @@
+/* ============================================================
+   PANTALLAS DE DESTINOS  (Views/Destinations/*.cshtml)
+   Index, Detail y Surprise
+   Mismos colores que explorar.css para mantener el estilo.
+   ============================================================ */
+
+:root {
+    --dest-green: #146c43;
+    --dest-green-dark: #0b3d2e;
+    --dest-green-light: #e8f5ee;
+    --dest-gray: #6b7280;
+}
+
+.dest-page {
+    padding-bottom: 50px;
+}
+
+/* ---------- Encabezado ---------- */
+.dest-hero {
+    background: linear-gradient(135deg, var(--dest-green-dark), #198754);
+    color: #fff;
+    border-radius: 20px;
+    padding: 45px 24px 30px;
+    margin: 20px 0 24px;
+    text-align: center;
+}
+
+    .dest-hero h1 {
+        font-size: 2.6rem;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .dest-hero p {
+        opacity: .9;
+        max-width: 720px;
+        margin: 0 auto 24px;
+    }
+
+.dest-search {
+    display: flex;
+    align-items: center;
+    max-width: 640px;
+    margin: 0 auto 22px;
+    background: #fff;
+    border-radius: 999px;
+    padding: 6px 6px 6px 18px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.15);
+}
+
+.dest-search-icon {
+    margin-right: 8px;
+}
+
+.dest-search input {
+    flex: 1;
+    border: 0;
+    outline: 0;
+    font-size: 1rem;
+    min-width: 0;
+}
+
+.dest-search button {
+    border: 0;
+    border-radius: 999px;
+    background: var(--dest-green);
+    color: #fff;
+    font-weight: 600;
+    padding: 10px 28px;
+}
+
+    .dest-search button:hover {
+        background: var(--dest-green-dark);
+    }
+
+/* ---------- Pastillas de provincia ---------- */
+.dest-pills {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+}
+
+.dest-pill {
+    background: #fff;
+    color: #1f2937;
+    border-radius: 999px;
+    padding: 7px 18px;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: .92rem;
+    box-shadow: 0 2px 6px rgba(0,0,0,.1);
+}
+
+    .dest-pill:hover {
+        background: var(--dest-green-light);
+        color: var(--dest-green-dark);
+    }
+
+    .dest-pill.active {
+        background: var(--dest-green);
+        color: #fff;
+    }
+
+/* ---------- Botones ---------- */
+.dest-btn-primary,
+.dest-btn-secondary {
+    display: inline-block;
+    border-radius: 999px;
+    padding: 10px 24px;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.dest-btn-primary {
+    background: var(--dest-green);
+    color: #fff;
+}
+
+    .dest-btn-primary:hover {
+        background: var(--dest-green-dark);
+        color: #fff;
+    }
+
+.dest-btn-secondary {
+    background: #fff;
+    color: var(--dest-green-dark);
+    border: 1px solid #cfe3d8;
+}
+
+    .dest-btn-secondary:hover {
+        background: var(--dest-green-light);
+        color: var(--dest-green-dark);
+    }
+
+.dest-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+/* ---------- Banner Sorpréndeme ---------- */
+.dest-surprise {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    background: #f3fbf6;
+    border: 1px solid #d5ecdf;
+    border-radius: 16px;
+    padding: 22px 26px;
+    margin-bottom: 30px;
+}
+
+    .dest-surprise h3 {
+        font-weight: 700;
+        margin-bottom: 4px;
+    }
+
+    .dest-surprise p {
+        color: var(--dest-gray);
+        margin: 0;
+    }
+
+.dest-surprise-result {
+    margin-top: 20px;
+}
+
+    .dest-surprise-result .dest-actions {
+        margin: 0;
+    }
+
+/* ---------- Secciones ---------- */
+.dest-section {
+    margin-bottom: 36px;
+}
+
+    .dest-section h2 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 16px;
+    }
+
+.dest-section-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+    .dest-section-header a {
+        color: var(--dest-green);
+        font-weight: 600;
+        text-decoration: none;
+    }
+
+/* ---------- Cuadrícula de tarjetas ---------- */
+.dest-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 20px;
+}
+
+.dest-card,
+.dest-content-card {
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 14px rgba(0,0,0,.08);
+    color: inherit;
+    text-decoration: none;
+    transition: transform .15s, box-shadow .15s;
+}
+
+    .dest-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 24px rgba(0,0,0,.12);
+        color: inherit;
+    }
+
+/* Portada de la tarjeta: imagen o degradado con ícono */
+.dest-card-cover,
+.dest-content-img {
+    position: relative;
+    height: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #d8f0e3, #a8d5ba);
+    font-size: 3rem;
+}
+
+    .dest-card-cover img,
+    .dest-content-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+.dest-badge-featured,
+.dest-type-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: rgba(255,255,255,.95);
+    color: var(--dest-green-dark);
+    border-radius: 999px;
+    padding: 3px 12px;
+    font-size: .78rem;
+    font-weight: 600;
+}
+
+.dest-card-body {
+    padding: 14px 16px 16px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+    .dest-card-body h3 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin-bottom: 4px;
+    }
+
+.dest-province {
+    color: var(--dest-gray);
+    font-size: .9rem;
+    margin-bottom: 8px;
+}
+
+/* Descripción cortada a 3 líneas */
+.dest-description {
+    color: #374151;
+    font-size: .92rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-bottom: 12px;
+}
+
+.dest-count {
+    margin-top: auto;
+    align-self: flex-start;
+    background: var(--dest-green-light);
+    color: var(--dest-green-dark);
+    border-radius: 999px;
+    padding: 3px 12px;
+    font-size: .8rem;
+    font-weight: 600;
+}
+
+.dest-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 10px;
+}
+
+.dest-tag {
+    background: #f3f4f6;
+    border-radius: 999px;
+    padding: 2px 10px;
+    font-size: .78rem;
+}
+
+.dest-link {
+    margin-top: auto;
+    color: var(--dest-green);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+/* ---------- Detalle ---------- */
+.dest-detail-cover {
+    position: relative;
+    height: 300px;
+    border-radius: 20px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--dest-green-dark), #198754);
+    margin-bottom: 28px;
+}
+
+    .dest-detail-cover img {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+.dest-cover-icon-lg {
+    font-size: 6rem;
+    opacity: .35;
+}
+
+.dest-detail-title {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 24px 28px;
+    color: #fff;
+    background: linear-gradient(transparent, rgba(0,0,0,.55));
+}
+
+    .dest-detail-title .dest-badge-featured {
+        position: static;
+        display: inline-block;
+        margin-bottom: 8px;
+    }
+
+    .dest-detail-title h1 {
+        font-size: 2.4rem;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .dest-detail-title p {
+        margin: 4px 0 0;
+        opacity: .9;
+    }
+
+.dest-detail-layout {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 24px;
+    margin-bottom: 36px;
+}
+
+.dest-detail-info,
+.dest-map {
+    background: #fff;
+    border-radius: 16px;
+    padding: 22px 24px;
+    box-shadow: 0 4px 14px rgba(0,0,0,.06);
+}
+
+    .dest-detail-info h2,
+    .dest-map h2 {
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin-bottom: 12px;
+    }
+
+.dest-map-placeholder {
+    height: 180px;
+    border: 2px dashed #cfe3d8;
+    border-radius: 12px;
+    background: var(--dest-green-light);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--dest-green-dark);
+    text-align: center;
+}
+
+    .dest-map-placeholder span {
+        font-size: 2.4rem;
+    }
+
+    .dest-map-placeholder p {
+        margin: 4px 0 0;
+        font-weight: 600;
+    }
+
+/* ---------- Sin resultados ---------- */
+.dest-empty {
+    text-align: center;
+    background: #fff;
+    border-radius: 16px;
+    padding: 40px 20px;
+    box-shadow: 0 4px 14px rgba(0,0,0,.06);
+}
+
+.dest-empty-icon {
+    font-size: 3rem;
+    margin-bottom: 8px;
+}
+
+.dest-empty p {
+    color: var(--dest-gray);
+}
+
+/* ---------- Celular ---------- */
+@media (max-width: 768px) {
+    .dest-hero h1 {
+        font-size: 2rem;
+    }
+
+    .dest-detail-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .dest-detail-cover {
+        height: 220px;
+    }
+
+    .dest-detail-title h1 {
+        font-size: 1.8rem;
+    }
+}

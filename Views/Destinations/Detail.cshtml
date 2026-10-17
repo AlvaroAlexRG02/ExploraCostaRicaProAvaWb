@@ -1,0 +1,22 @@
+﻿@model ExploraCostaRica.Models.ViewModels.DestinationDetailViewModel
+
+@{
+    ViewData["Title"] = Model.Destination.Name;
+}
+
+<link rel="stylesheet" href="~/css/destinations.css" asp-append-version="true" />
+
+<div class="dest-page">
+
+    <!-- ===================== NAVEGACIÓN ===================== -->
+    <div class="dest-actions">
+        <a asp-action="Index" class="dest-btn-secondary">← Volver a destinos</a>
+
+        <a asp-action="Surprise" asp-route-exclude="@Model.Destination.DestinationId"
+           class="dest-btn-primary">🎲 Sorpréndeme</a>
+    </div>
+
+    @* Portada, información, mapa y contenido relacionado *@
+    <partial name="_DestinationDetail" model="Model" />
+
+</div>

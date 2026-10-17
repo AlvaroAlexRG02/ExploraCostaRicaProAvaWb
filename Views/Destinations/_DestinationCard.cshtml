@@ -1,0 +1,58 @@
+﻿@model ExploraCostaRica.Models.ViewModels.DestinationCardViewModel
+
+@{
+    // Ícono según la provincia (solo presentación, se usa
+    // cuando el destino todavía no tiene imagen)
+    string ProvinceIcon(string? province) => province?.ToLower() switch
+    {
+        "alajuela" => "🌋",
+        "puntarenas" => "🌊",
+        "limón" or "limon" => "🐢",
+        "guanacaste" => "🏖️",
+        "cartago" => "⛰️",
+        "heredia" => "☕",
+        "san josé" or "san jose" => "🏙️",
+        _ => "📍"
+    };
+}
+
+@* ==========================================================
+   TARJETA DE UN DESTINO
+   Se reutiliza en "Destacados" y en "Todos los destinos".
+   Toda la tarjeta es un enlace al detalle.
+   ========================================================== *@
+<a class="dest-card"
+   asp-controller="Destinations"
+   asp-action="Detail"
+   asp-route-id="@Model.DestinationId">
+
+    <div class="dest-card-cover">
+        @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
+        {
+            <img src="@Model.ImageUrl" alt="@Model.Name" loading="lazy" />
+        }
+        else
+        {
+            <span class="dest-cover-icon">@ProvinceIcon(Model.Province)</span>
+        }
+
+        @if (Model.IsFeatured)
+        {
+            <span class="dest-badge-featured">★ Destacado</span>
+        }
+    </div>
+
+    <div class="dest-card-body">
+        <h3>@Model.Name</h3>
+
+        <p class="dest-province">📍 @Model.Province</p>
+
+        <p class="dest-description">@Model.Description</p>
+
+        <span class="dest-count">
+            @(Model.ContentCount == 1
+                ? "1 contenido"
+                : $"{Model.ContentCount} contenidos")
+        </span>
+    </div>
+</a>

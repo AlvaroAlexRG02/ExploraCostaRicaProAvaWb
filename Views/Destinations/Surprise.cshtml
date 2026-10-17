@@ -1,0 +1,33 @@
+﻿@model ExploraCostaRica.Models.ViewModels.DestinationDetailViewModel
+
+@{
+    ViewData["Title"] = "Sorpréndeme";
+}
+
+<link rel="stylesheet" href="~/css/destinations.css" asp-append-version="true" />
+
+<div class="dest-page">
+
+    <!-- ===================== ENCABEZADO SORPRESA ===================== -->
+    <section class="dest-surprise dest-surprise-result">
+        <div>
+            <h3>🎲 ¡Tu destino sorpresa es...!</h3>
+            <p>Elegido al azar entre los destinos de Costa Rica.</p>
+        </div>
+
+        <div class="dest-actions">
+            @* exclude = destino actual, para que no se repita *@
+            <a asp-action="Surprise" asp-route-exclude="@Model.Destination.DestinationId"
+               class="dest-btn-primary">🎲 Otro destino</a>
+
+            <a asp-action="Detail" asp-route-id="@Model.Destination.DestinationId"
+               class="dest-btn-secondary">Ver detalle</a>
+
+            <a asp-action="Index" class="dest-btn-secondary">Todos los destinos</a>
+        </div>
+    </section>
+
+    @* Portada, información, mapa y contenido relacionado *@
+    <partial name="_DestinationDetail" model="Model" />
+
+</div>

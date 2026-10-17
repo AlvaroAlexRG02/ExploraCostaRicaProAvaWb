@@ -1,0 +1,144 @@
+﻿@model ExploraCostaRica.Models.ViewModels.DestinationDetailViewModel
+
+@{
+    var d = Model.Destination;
+
+    // Ícono según la provincia (cuando no hay imagen)
+    string ProvinceIcon(string? province) => province?.ToLower() switch
+    {
+        "alajuela" => "🌋",
+        "puntarenas" => "🌊",
+        "limón" or "limon" => "🐢",
+        "guanacaste" => "🏖️",
+        "cartago" => "⛰️",
+        "heredia" => "☕",
+        "san josé" or "san jose" => "🏙️",
+        _ => "📍"
+    };
+
+    // Ícono según el tipo de contenido (igual que en Explorar)
+    string TypeIcon(string? type) => type?.ToLower() switch
+    {
+        "foto" => "📷",
+        "video" => "▶️",
+        "noticia" => "📰",
+        "libro" => "📖",
+        "paper" => "📄",
+        "cultura" => "🏛️",
+        _ => "✨"
+    };
+}
+
+@* ==========================================================
+   CONTENIDO COMPARTIDO POR Detail.cshtml Y Surprise.cshtml
+   Muestra el destino, el espacio del mapa y su contenido.
+   ========================================================== *@
+
+<!-- ===================== PORTADA ===================== -->
+<section class="dest-detail-cover">
+    @if (!string.IsNullOrWhiteSpace(d.ImageUrl))
+    {
+        <img src="@d.ImageUrl" alt="@d.Name" />
+    }
+    else
+    {
+        <span class="dest-cover-icon dest-cover-icon-lg">@ProvinceIcon(d.Province)</span>
+    }
+
+    <div class="dest-detail-title">
+        @if (d.IsFeatured)
+        {
+            <span class="dest-badge-featured">★ Destacado</span>
+        }
+        <h1>@d.Name</h1>
+        <p>📍 @d.Province, Costa Rica</p>
+    </div>
+</section>
+
+<div class="dest-detail-layout">
+
+    <!-- ===================== INFORMACIÓN ===================== -->
+    <section class="dest-detail-info">
+        <h2>Sobre este destino</h2>
+
+        <p>
+            @(string.IsNullOrWhiteSpace(d.Description)
+                ? "Todavía no tenemos una descripción para este destino."
+                : d.Description)
+        </p>
+    </section>
+
+    <!-- ===================== MAPA (MEJORA FUTURA) ===================== -->
+    <aside class="dest-map">
+        <h2>Ubicación</h2>
+
+        <div class="dest-map-placeholder">
+            <span>🗺️</span>
+            <p>Mapa próximamente</p>
+
+            @if (Model.HasCoordinates)
+            {
+                <small>Lat: @d.Latitude · Lng: @d.Longitude</small>
+            }
+        </div>
+    </aside>
+</div>
+
+<!-- ===================== CONTENIDO RELACIONADO ===================== -->
+<section class="dest-section">
+    <div class="dest-section-header">
+        <h2>Contenido sobre @d.Name</h2>
+
+        @* Reutiliza el filtro DestinoId de la pantalla Explorar *@
+        <a asp-controller="Explorar" asp-action="Index"
+           asp-route-DestinoId="@d.DestinationId">Ver todo en Explorar →</a>
+    </div>
+
+    @if (!Model.RelatedContent.Any())
+    {
+        <div class="dest-empty">
+            <div class="dest-empty-icon">📭</div>
+            <h4>Todavía no hay contenido para este destino</h4>
+            <p>Pronto agregaremos fotos, videos y noticias.</p>
+        </div>
+    }
+    else
+    {
+        <div class="dest-grid">
+            @foreach (var item in Model.RelatedContent)
+            {
+                <article class="dest-content-card">
+                    <div class="dest-content-img">
+                        @if (!string.IsNullOrWhiteSpace(item.ImageUrl))
+                        {
+                            <img src="@item.ImageUrl" alt="@item.Title" loading="lazy" />
+                        }
+                        else
+                        {
+                            <span>@TypeIcon(item.ContentType)</span>
+                        }
+                        <span class="dest-type-badge">@TypeIcon(item.ContentType) @item.ContentType</span>
+                    </div>
+
+                    <div class="dest-card-body">
+                        <h3>@item.Title</h3>
+                        <p class="dest-description">@item.Description</p>
+
+                        <div class="dest-meta">
+                            @if (!string.IsNullOrWhiteSpace(item.Category))
+                            {
+                                <span class="dest-tag">@item.Category</span>
+                            }
+                            <span class="dest-tag">🛡️ @item.Source</span>
+                        </div>
+
+                        @if (!string.IsNullOrWhiteSpace(item.Url))
+                        {
+                            <a href="@item.Url" target="_blank" rel="noopener" class="dest-link">Ver fuente ↗</a>
+                        }
+                    </div>
+                </article>
+            }
+        </div>
+    }
+</section>

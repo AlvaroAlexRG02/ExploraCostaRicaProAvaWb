@@ -36,6 +36,9 @@ builder.Services.AddScoped<IExplorarService, ExplorarService>();
 // y administración del historial.
 builder.Services.AddScoped<IDescargasService, DescargasService>();
 
+// Servicio de Destinos y Sorpréndeme
+// Lista de destinos, detalle y selección aleatoria real.
+builder.Services.AddScoped<IDestinationService, DestinationService>();
 
 // ============================================================
 // API EXTERNA: GNEWS

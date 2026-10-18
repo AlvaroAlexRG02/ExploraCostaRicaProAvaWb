@@ -1,0 +1,84 @@
+﻿@model List<ExploraCostaRica.Models.DTOs.MediaItemDto>
+
+@{
+    ViewData["Title"] = "Noticias de Costa Rica";
+    string busqueda = ViewBag.Busqueda ?? "";
+    string? error = ViewBag.Error;
+}
+
+<div class="container py-5">
+
+    <div class="text-center mb-5">
+        <h1 class="fw-bold">Noticias de Costa Rica</h1>
+        <p class="text-muted">Actualidad y turismo desde distintas fuentes.</p>
+    </div>
+
+    <form asp-controller="Noticias" asp-action="Index" method="get"
+          class="row justify-content-center mb-5">
+        <div class="col-md-8">
+            <div class="input-group input-group-lg">
+                <input type="text" name="busqueda" value="@busqueda"
+                       class="form-control"
+                       placeholder="Ejemplo: Costa Rica turismo"
+                       required />
+                <button class="btn btn-success" type="submit">
+                    Buscar noticias
+                </button>
+            </div>
+        </div>
+    </form>
+
+    @if (!string.IsNullOrWhiteSpace(error))
+    {
+        <div class="alert alert-danger">@error</div>
+    }
+    else if (Model.Count == 0 && !string.IsNullOrWhiteSpace(busqueda))
+    {
+        <div class="alert alert-info">
+            No se encontraron noticias para: @busqueda
+        </div>
+    }
+
+    @if (Model.Count > 0)
+    {
+        <div class="row g-4">
+            @foreach (var noticia in Model)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 shadow-sm border-0">
+
+                        @if (!string.IsNullOrWhiteSpace(noticia.ImageUrl))
+                        {
+                            <img src="@noticia.ImageUrl"
+                                 class="card-img-top"
+                                 alt="@noticia.Title"
+                                 style="height:200px;object-fit:cover;" />
+                        }
+
+                        <div class="card-body">
+                            <h5 class="card-title">@noticia.Title</h5>
+                            <p class="card-text text-muted">
+                                @noticia.Description
+                            </p>
+                        </div>
+
+                        <div class="card-footer bg-white border-0">
+                            <small class="text-muted d-block mb-2">
+                                @noticia.Author
+                                @if (noticia.PublishedAt.HasValue)
+                                {
+                                    <span> · @noticia.PublishedAt.Value.ToString("dd/MM/yyyy")</span>
+                                }
+                            </small>
+                            <a href="@noticia.Url" target="_blank"
+                               rel="noopener noreferrer"
+                               class="btn btn-outline-success btn-sm">
+                                Leer noticia
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

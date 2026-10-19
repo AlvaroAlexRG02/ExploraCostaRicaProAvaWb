@@ -2,15 +2,6 @@
 
 namespace ExploraCostaRica.Services
 {
-    // ============================================================
-    // CONTRATO DEL SERVICIO DE DESTINOS Y SORPRÉNDEME
-    // ============================================================
-    // El controller solo conoce esta interfaz. Las consultas y
-    // la selección aleatoria viven en DestinationService.
-    //
-    // Así cumplimos la regla del enunciado:
-    // "No puede haber lógica de negocio en los controladores".
-    // ============================================================
     public interface IDestinationService
     {
         // Pantalla principal: destacados + lista filtrada + provincias

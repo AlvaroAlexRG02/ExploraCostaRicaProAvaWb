@@ -12,27 +12,20 @@ namespace ExploraCostaRica.Services
     public class FotografiasApiService : IFotografiasApiService
     {
         private readonly HttpClient _httpClient;
-        private readonly string _accessKey;
+        private readonly string? _accessKey;
 
-        public FotografiasApiService(
-            HttpClient httpClient,
-            IConfiguration configuration)
+        public FotografiasApiService(HttpClient httpClient, IConfiguration configuration)
         {
             _httpClient = httpClient;
 
-            _accessKey = configuration["Unsplash:AccessKey"]
-                ?? throw new InvalidOperationException(
-                    "No se configuró la Access Key de Unsplash.");
+            _accessKey = configuration["Unsplash:AccessKey"];
 
-            _httpClient.BaseAddress =
-                new Uri("https://api.unsplash.com/");
+            _httpClient.BaseAddress = new Uri("https://api.unsplash.com/");
 
             _httpClient.DefaultRequestHeaders.Accept.Add(
-                new MediaTypeWithQualityHeaderValue(
-                    "application/json"));
+                new MediaTypeWithQualityHeaderValue("application/json"));
 
-            _httpClient.DefaultRequestHeaders.Add(
-                "Accept-Version", "v1");
+            _httpClient.DefaultRequestHeaders.Add("Accept-Version", "v1");
         }
 
         // Consulta fotografías reales desde Unsplash.
@@ -46,6 +39,11 @@ namespace ExploraCostaRica.Services
             if (string.IsNullOrWhiteSpace(busqueda))
             {
                 return fotografias;
+            }
+            if (string.IsNullOrWhiteSpace(_accessKey))
+            {
+                throw new InvalidOperationException(
+                    "No se configuró la Access Key de Unsplash.");
             }
 
             string consulta = Uri.EscapeDataString(busqueda.Trim());
@@ -142,11 +140,11 @@ namespace ExploraCostaRica.Services
 
                     ImageUrl = foto.UrlImagen,
 
-                    Category = "Fotografía",
+                    Category = "Naturaleza",
 
                     Destination = busqueda.Trim(),
 
-                    ContentType = "Imagen",
+                    ContentType = "Foto",
 
                     Source = "Unsplash",
 

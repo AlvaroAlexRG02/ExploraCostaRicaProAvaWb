@@ -19,7 +19,7 @@ namespace ExploraCostaRica.Controllers
         // ====================================================
         // CONSTRUCTOR
         // ====================================================
-        // ASP.NET Core nos entrega automáticamente:
+        // ASP.NET Core nos entrega automï¿½ticamente:
         // - Logger
         // - DbContext
         //
@@ -36,7 +36,7 @@ namespace ExploraCostaRica.Controllers
 
 
         // ====================================================
-        // PÁGINA PRINCIPAL
+        // Pï¿½GINA PRINCIPAL
         // ====================================================
         // Lee la vista vw_MediaCatalog directamente desde
         // SQL Server.
@@ -44,7 +44,7 @@ namespace ExploraCostaRica.Controllers
         // Ya NO tenemos:
         //
         // new MediaItem
-        // Volcán Arenal
+        // Volcï¿½n Arenal
         // Monteverde
         // Guanacaste
         //

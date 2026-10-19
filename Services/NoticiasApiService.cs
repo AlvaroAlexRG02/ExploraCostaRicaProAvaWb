@@ -1,4 +1,6 @@
-﻿
+﻿using ExploraCostaRica.Models.DTOs;
+using System.Security.Cryptography;
+using System.Text;
 using ExploraCostaRica.Models;
 using System.Net.Http.Json;
 using System.Text.Json.Serialization;
@@ -62,7 +64,39 @@ namespace ExploraCostaRica.Services
 
             }).ToList();
         }
+        // Convierte las noticias al DTO común del proyecto.
+        public async Task<List<MediaItemDto>> BuscarContenidoAsync(
+            string busqueda = "Costa Rica")
+        {
+            var noticias = await ObtenerNoticiasAsync(busqueda);
 
+            return noticias.Select(n => new MediaItemDto
+            {
+                SchemaVersion = "1.0",
+                ExternalId = CrearExternalId(n.Url),
+                Title = n.Titulo,
+                Description = n.Descripcion,
+                Author = n.Fuente,
+                Url = n.Url,
+                ImageUrl = string.IsNullOrWhiteSpace(n.ImagenUrl)
+                    ? null
+                    : n.ImagenUrl,
+                Category = "Turismo",
+                Destination = busqueda.Trim(),
+                ContentType = "Noticia",
+                Source = "GNews",
+                PublishedAt = n.FechaPublicacion
+            }).ToList();
+        }
+
+        // ExternalId en SQL admite 250 caracteres; las URLs pueden ser más largas.
+        private static string CrearExternalId(string url)
+        {
+            return url.Length <= 250
+                ? url
+                : Convert.ToHexString(
+                    SHA256.HashData(Encoding.UTF8.GetBytes(url)));
+        }
         private class GNewsRespuesta
         {
             [JsonPropertyName("articles")]

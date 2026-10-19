@@ -16,6 +16,7 @@ namespace ExploraCostaRica.Controllers
 
         // Página con el buscador de fotografías.
         [HttpGet]
+        [ApiExplorerSettings(IgnoreApi = true)]
         public async Task<IActionResult> Index(string? busqueda)
         {
             ViewBag.Busqueda = busqueda ?? string.Empty;
@@ -77,6 +78,20 @@ namespace ExploraCostaRica.Controllers
                 return StatusCode(502, new
                 {
                     mensaje = "No fue posible consultar Unsplash."
+                });
+            }
+            catch (InvalidOperationException)
+            {
+                return StatusCode(503, new
+                {
+                    mensaje = "El servicio de fotografías no está configurado."
+                });
+            }
+            catch (TaskCanceledException)
+            {
+                return StatusCode(504, new
+                {
+                    mensaje = "Unsplash tardó demasiado en responder."
                 });
             }
         }

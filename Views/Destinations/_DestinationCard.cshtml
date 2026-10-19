@@ -1,8 +1,7 @@
 ﻿@model ExploraCostaRica.Models.ViewModels.DestinationCardViewModel
 
 @{
-    // Ícono según la provincia (solo presentación, se usa
-    // cuando el destino todavía no tiene imagen)
+    
     string ProvinceIcon(string? province) => province?.ToLower() switch
     {
         "alajuela" => "🌋",
@@ -16,11 +15,9 @@
     };
 }
 
-@* ==========================================================
-   TARJETA DE UN DESTINO
-   Se reutiliza en "Destacados" y en "Todos los destinos".
-   Toda la tarjeta es un enlace al detalle.
-   ========================================================== *@
+@* 
+
+*@
 <a class="dest-card"
    asp-controller="Destinations"
    asp-action="Detail"

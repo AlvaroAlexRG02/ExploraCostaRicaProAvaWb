@@ -3,7 +3,7 @@
 @{
     var d = Model.Destination;
 
-    // Ícono según la provincia (cuando no hay imagen)
+    
     string ProvinceIcon(string? province) => province?.ToLower() switch
     {
         "alajuela" => "🌋",
@@ -16,7 +16,7 @@
         _ => "📍"
     };
 
-    // Ícono según el tipo de contenido (igual que en Explorar)
+    
     string TypeIcon(string? type) => type?.ToLower() switch
     {
         "foto" => "📷",
@@ -29,10 +29,9 @@
     };
 }
 
-@* ==========================================================
-   CONTENIDO COMPARTIDO POR Detail.cshtml Y Surprise.cshtml
-   Muestra el destino, el espacio del mapa y su contenido.
-   ========================================================== *@
+@*
+
+*@
 
 <!-- ===================== PORTADA ===================== -->
 <section class="dest-detail-cover">
@@ -89,7 +88,9 @@
     <div class="dest-section-header">
         <h2>Contenido sobre @d.Name</h2>
 
-        @* Reutiliza el filtro DestinoId de la pantalla Explorar *@
+        @* 
+
+        *@
         <a asp-controller="Explorar" asp-action="Index"
            asp-route-DestinoId="@d.DestinationId">Ver todo en Explorar →</a>
     </div>

@@ -1,14 +1,8 @@
-﻿using ExploraCostaRica.Models.Entities;
+﻿using ExploraCostaRica.Models.DTOs;
+using ExploraCostaRica.Models.Entities;
 
 namespace ExploraCostaRica.Models.ViewModels
 {
-    // ============================================================
-    // TODO LO QUE NECESITAN LAS VISTAS
-    // Destinos/Detalle.cshtml y Destinos/Sorprendeme.cshtml
-    // ============================================================
-    // Las dos pantallas muestran lo mismo: un destino y su
-    // contenido asociado. Por eso comparten este ViewModel.
-    // ============================================================
     public class DestinationDetailViewModel
     {
         // Destino que se muestra
@@ -17,6 +11,10 @@ namespace ExploraCostaRica.Models.ViewModels
         // Contenido relacionado (fotos, videos, noticias...)
         // leído desde la vista vw_MediaCatalog
         public List<VwMediaCatalog> RelatedContent { get; set; } = new();
+
+        // Observaciones de biodiversidad (iNaturalist) cerca del destino.
+        // Puede venir vacío si la API no responde.
+        public List<MediaItemDto> Biodiversidad { get; set; } = new();
 
         // true cuando el destino lo eligió el botón Sorpréndeme
         public bool IsSurprise { get; set; }

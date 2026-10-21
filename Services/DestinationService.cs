@@ -3,7 +3,7 @@ using ExploraCostaRica.Data;
 using ExploraCostaRica.Models.Entities;
 using ExploraCostaRica.Models.ViewModels;
 using Microsoft.EntityFrameworkCore;
-
+using ExploraCostaRica.Models.DTOs;
 namespace ExploraCostaRica.Services
 {
     // ============================================================
@@ -21,11 +21,15 @@ namespace ExploraCostaRica.Services
         private const int MaxRelatedContent = 12;
 
         private readonly ExploraCostaRicaDbContext _context;
+        private readonly IBiodiversidadApiService _biodiversidadService;
 
         // El DbContext llega por inyección de dependencias (Program.cs)
-        public DestinationService(ExploraCostaRicaDbContext context)
+        public DestinationService(
+    ExploraCostaRicaDbContext context,
+    IBiodiversidadApiService biodiversidadService)
         {
             _context = context;
+            _biodiversidadService = biodiversidadService;
         }
 
         // ------------------------------------------------------------
@@ -136,9 +140,7 @@ namespace ExploraCostaRica.Services
             return await BuildDetailAsync(randomId.Value, isSurprise: true);
         }
 
-        // ------------------------------------------------------------
-        // Arma el detalle (lo usan Detalle y Sorpréndeme)
-        // ------------------------------------------------------------
+
         private async Task<DestinationDetailViewModel?> BuildDetailAsync(int destinationId, bool isSurprise)
         {
             var destination = await ActiveDestinations()
@@ -156,12 +158,42 @@ namespace ExploraCostaRica.Services
                 .Take(MaxRelatedContent)
                 .ToListAsync();
 
+            // Biodiversidad desde la API externa (iNaturalist)
+            var biodiversidad = await ObtenerBiodiversidadAsync(destination);
+
             return new DestinationDetailViewModel
             {
                 Destination = destination,
                 RelatedContent = relatedContent,
+                Biodiversidad = biodiversidad,
                 IsSurprise = isSurprise
             };
+        }
+        // ------------------------------------------------------------
+        // Consulta iNaturalist. Si falla, el detalle carga igual
+        // y simplemente no muestra la sección de biodiversidad.
+        // ------------------------------------------------------------
+        private async Task<List<MediaItemDto>> ObtenerBiodiversidadAsync(
+            Destination destination)
+        {
+            if (!destination.Latitude.HasValue || !destination.Longitude.HasValue)
+                return new List<MediaItemDto>();
+
+            try
+            {
+                return await _biodiversidadService.BuscarContenidoAsync(
+                    (double)destination.Latitude.Value,
+                    (double)destination.Longitude.Value,
+                    destination.Name);
+            }
+            catch (HttpRequestException)
+            {
+                return new List<MediaItemDto>();
+            }
+            catch (TaskCanceledException)
+            {
+                return new List<MediaItemDto>();
+            }
         }
 
         // ------------------------------------------------------------

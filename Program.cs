@@ -67,6 +67,20 @@ builder.Services.AddHttpClient<IFotografiasApiService, FotografiasApiService>(
         client.Timeout = TimeSpan.FromSeconds(20);
     }
 );
+// ============================================================
+// API EXTERNA: INATURALIST (BIODIVERSIDAD)
+// ============================================================
+
+builder.Services.AddMemoryCache();
+
+builder.Services.AddHttpClient<IBiodiversidadApiService, BiodiversidadApiService>(
+    client =>
+    {
+        client.Timeout = TimeSpan.FromSeconds(20);
+        client.DefaultRequestHeaders.UserAgent.ParseAdd(
+            "ExploraCostaRica/1.0");
+    }
+);
 
 
 // ============================================================

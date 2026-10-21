@@ -46,54 +46,5 @@ namespace ExploraCostaRica.Controllers
 
             return View(fotografias);
         }
-
-        // Endpoint propio que devuelve fotografías como JSON.
-        // GET /api/fotografias?busqueda=Volcan Arenal Costa Rica
-        [HttpGet("/api/fotografias")]
-        [Produces("application/json")]
-        [ProducesResponseType(typeof(List<MediaItemDto>), 200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(502)]
-        public async Task<IActionResult> ObtenerJson(
-            [FromQuery] string? busqueda)
-        {
-            if (string.IsNullOrWhiteSpace(busqueda))
-            {
-                return BadRequest(new
-                {
-                    mensaje = "Debés indicar un destino para buscar."
-                });
-            }
-
-            try
-            {
-                var resultados =
-                    await _fotografiasService.BuscarContenidoAsync(
-                        busqueda);
-
-                return Ok(resultados);
-            }
-            catch (HttpRequestException)
-            {
-                return StatusCode(502, new
-                {
-                    mensaje = "No fue posible consultar Unsplash."
-                });
-            }
-            catch (InvalidOperationException)
-            {
-                return StatusCode(503, new
-                {
-                    mensaje = "El servicio de fotografías no está configurado."
-                });
-            }
-            catch (TaskCanceledException)
-            {
-                return StatusCode(504, new
-                {
-                    mensaje = "Unsplash tardó demasiado en responder."
-                });
-            }
-        }
     }
 }

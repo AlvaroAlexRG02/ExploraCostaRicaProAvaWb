@@ -2,9 +2,11 @@
 using ExploraCostaRica.Services;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ExploraCostaRica.Controllers
+namespace ExploraCostaRica.API.Controllers
 {
-    public class BiodiversidadController : Controller
+    [ApiController]
+    [Route("api/biodiversidad")]
+    public class BiodiversidadController : ControllerBase
     {
         private readonly IBiodiversidadApiService _biodiversidadService;
         private readonly IDestinationService _destinationService;
@@ -17,15 +19,15 @@ namespace ExploraCostaRica.Controllers
             _destinationService = destinationService;
         }
 
-        // GET /api/biodiversidad?destinoId=1&radioKm=10
-        [HttpGet("/api/biodiversidad")]
+        // GET: /api/biodiversidad?destinoId=8&radioKm=10
+        [HttpGet]
         [Produces("application/json")]
         [ProducesResponseType(typeof(List<MediaItemDto>), 200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
         [ProducesResponseType(502)]
         [ProducesResponseType(504)]
-        public async Task<IActionResult> ObtenerJson(
+        public async Task<IActionResult> Obtener(
             [FromQuery] int destinoId,
             [FromQuery] int radioKm = 10)
         {
@@ -37,7 +39,8 @@ namespace ExploraCostaRica.Controllers
                 });
             }
 
-            var detalle = await _destinationService.GetDetailAsync(destinoId);
+            var detalle =
+                await _destinationService.GetDetailAsync(destinoId);
 
             if (detalle == null)
             {
@@ -57,11 +60,12 @@ namespace ExploraCostaRica.Controllers
 
             try
             {
-                var resultados = await _biodiversidadService.BuscarContenidoAsync(
-                    (double)detalle.Destination.Latitude!.Value,
-                    (double)detalle.Destination.Longitude!.Value,
-                    detalle.Destination.Name,
-                    radioKm);
+                var resultados =
+                    await _biodiversidadService.BuscarContenidoAsync(
+                        (double)detalle.Destination.Latitude!.Value,
+                        (double)detalle.Destination.Longitude!.Value,
+                        detalle.Destination.Name,
+                        radioKm);
 
                 return Ok(resultados);
             }

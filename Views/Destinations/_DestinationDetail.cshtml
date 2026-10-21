@@ -19,6 +19,7 @@
     
     string TypeIcon(string? type) => type?.ToLower() switch
     {
+        "biodiversidad" => "🦋",
         "foto" => "📷",
         "video" => "▶️",
         "noticia" => "📰",
@@ -143,3 +144,43 @@
         </div>
     }
 </section>
+<!-- ===================== BIODIVERSIDAD (iNaturalist) ===================== -->
+@if (Model.Biodiversidad.Any())
+{
+    <section class="dest-section">
+        <div class="dest-section-header">
+            <h2>Biodiversidad cerca de @d.Name</h2>
+            <small>Observaciones de la comunidad iNaturalist</small>
+        </div>
+
+        <div class="dest-grid">
+            @foreach (var item in Model.Biodiversidad)
+            {
+                <article class="dest-content-card">
+                    <div class="dest-content-img">
+                        @if (!string.IsNullOrWhiteSpace(item.ImageUrl))
+                        {
+                            <img src="@item.ImageUrl" alt="@item.Title" loading="lazy" />
+                        }
+                        <span class="dest-type-badge">@TypeIcon(item.ContentType) @item.ContentType</span>
+                    </div>
+
+                    <div class="dest-card-body">
+                        <h3>@item.Title</h3>
+                        <p class="dest-description">@item.Description</p>
+
+                        <div class="dest-meta">
+                            <span class="dest-tag">🛡️ @item.Source</span>
+                            @if (!string.IsNullOrWhiteSpace(item.Author))
+                            {
+                                <span class="dest-tag">📷 @item.Author</span>
+                            }
+                        </div>
+
+                        <a href="@item.Url" target="_blank" rel="noopener" class="dest-link">Ver observación ↗</a>
+                    </div>
+                </article>
+            }
+        </div>
+    </section>
+}

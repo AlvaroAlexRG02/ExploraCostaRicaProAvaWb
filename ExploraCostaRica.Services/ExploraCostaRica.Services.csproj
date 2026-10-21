@@ -6,4 +6,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ExploraCostaRica.Data\ExploraCostaRica.Data.csproj" />
+    <ProjectReference Include="..\ExploraCostaRica.Models\ExploraCostaRica.Models.csproj" />
+  </ItemGroup>
+
 </Project>

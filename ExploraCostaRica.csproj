@@ -34,6 +34,7 @@
 	<ItemGroup>
 	  <ProjectReference Include="ExploraCostaRica.Models\ExploraCostaRica.Models.csproj" />
 	  <ProjectReference Include="ExploraCostaRica.Data\ExploraCostaRica.Data.csproj" />
+	  <ProjectReference Include="ExploraCostaRica.Services\ExploraCostaRica.Services.csproj" />
 	</ItemGroup>
 
 </Project>

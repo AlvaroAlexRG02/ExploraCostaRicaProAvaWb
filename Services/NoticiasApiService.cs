@@ -1,7 +1,6 @@
 ﻿using ExploraCostaRica.Models.DTOs;
 using System.Security.Cryptography;
 using System.Text;
-using ExploraCostaRica.Models;
 using System.Net.Http.Json;
 using System.Text.Json.Serialization;
 

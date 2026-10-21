@@ -1,4 +1,4 @@
-using ExploraCostaRica.Models;
+using ExploraCostaRica.Models.ViewModels;
 
 namespace ExploraCostaRica.Services
 {

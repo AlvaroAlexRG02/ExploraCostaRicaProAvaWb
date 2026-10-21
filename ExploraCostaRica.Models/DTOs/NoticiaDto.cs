@@ -1,5 +1,5 @@
 ﻿
-namespace ExploraCostaRica.Models
+namespace ExploraCostaRica.Models.DTOs
 {
     public class NoticiaDto
     {

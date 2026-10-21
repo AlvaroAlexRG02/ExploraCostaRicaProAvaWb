@@ -1,4 +1,4 @@
-﻿namespace ExploraCostaRica.Services
+﻿namespace ExploraCostaRica.Models.DTOs
 {
     public class FotografiaDto
     {

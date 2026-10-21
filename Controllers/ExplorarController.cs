@@ -1,4 +1,4 @@
-using ExploraCostaRica.Models;
+using ExploraCostaRica.Models.ViewModels;
 using ExploraCostaRica.Services;
 using Microsoft.AspNetCore.Mvc;
 

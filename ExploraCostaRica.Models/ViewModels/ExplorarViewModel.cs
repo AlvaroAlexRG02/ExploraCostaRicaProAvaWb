@@ -1,6 +1,6 @@
 using ExploraCostaRica.Models.Entities;
 
-namespace ExploraCostaRica.Models
+namespace ExploraCostaRica.Models.ViewModels
 {
     // ============================================================
     // FILTROS QUE ENVÍA EL USUARIO

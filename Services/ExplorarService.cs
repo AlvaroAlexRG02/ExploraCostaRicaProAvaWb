@@ -1,5 +1,5 @@
 using ExploraCostaRica.Data;
-using ExploraCostaRica.Models;
+using ExploraCostaRica.Models.ViewModels;
 using ExploraCostaRica.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 

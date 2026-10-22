@@ -37,4 +37,8 @@
 	  <ProjectReference Include="ExploraCostaRica.Services\ExploraCostaRica.Services.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="wwwroot\images\home\" />
+	</ItemGroup>
+
 </Project>

@@ -13,285 +13,578 @@
 }
 
 <style>
-    /* ========================================================
-       PÁGINA PRINCIPAL - EXPLORA COSTA RICA
-       ======================================================== */
+
+    /* =========================================================
+           HOME - EXPLORA COSTA RICA
+           ========================================================= */
 
     .explora-page {
-        padding-bottom: 50px;
+        position: relative;
+        padding-bottom: 55px;
     }
 
-    /* HERO / ENCABEZADO PRINCIPAL */
+
+    /* =========================================================
+           HERO
+           ========================================================= */
+
     .hero-explora {
-        background: linear-gradient(135deg, #0b3d2e, #198754);
+        position: relative;
+        width: 100vw;
+        margin-left: calc(50% - 50vw);
+        min-height: 410px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
         color: white;
-        border-radius: 20px;
-        padding: 55px 30px;
-        margin-bottom: 30px;
+        background: linear-gradient( 90deg, rgba(3, 40, 29, .68), rgba(3, 40, 29, .22), rgba(3, 40, 29, .55) ), url('/images/home/arenalunsplash.jpg');
+        background-size: cover;
+        background-position: center 47%;
+        border-radius: 0 0 38px 38px;
+    }
+
+
+        .hero-explora::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient( to top, rgba(0, 36, 25, .60), transparent 60% );
+            pointer-events: none;
+        }
+
+
+    .hero-content {
+        position: relative;
+        z-index: 2;
+        width: 100%;
+        max-width: 900px;
+        padding: 60px 25px 70px;
         text-align: center;
     }
 
+
     .hero-explora h1 {
-        font-size: 3rem;
-        font-weight: 700;
-        margin-bottom: 10px;
+        margin-bottom: 12px;
+        font-size: clamp(2.8rem, 5vw, 4.2rem);
+        font-weight: 800;
+        line-height: 1;
+        text-shadow: 0 4px 20px rgba(0,0,0,.35);
     }
 
-    .hero-explora p {
-        font-size: 1.1rem;
-        opacity: 0.9;
-        margin-bottom: 30px;
+
+    .hero-subtitle {
+        max-width: 720px;
+        margin: 0 auto 28px;
+        font-size: 1.15rem;
+        color: rgba(255,255,255,.96);
+        text-shadow: 0 2px 10px rgba(0,0,0,.30);
     }
 
-    /* BUSCADOR */
+
+    /* =========================================================
+           BUSCADOR
+           ========================================================= */
+
     .search-container {
-        max-width: 750px;
+        max-width: 780px;
         margin: 0 auto;
+        padding: 6px;
         display: flex;
-        gap: 10px;
+        gap: 7px;
+        background: rgba(255,255,255,.98);
+        border-radius: 999px;
+        box-shadow: 0 10px 30px rgba(0,0,0,.22);
     }
 
-    .search-container input {
-        flex: 1;
-        border: none;
-        border-radius: 10px;
-        padding: 14px 18px;
-        font-size: 1rem;
-        outline: none;
-    }
 
-    .search-container button {
-        border: none;
-        border-radius: 10px;
-        padding: 14px 25px;
-        background: white;
-        color: #198754;
-        font-weight: 600;
-    }
+        .search-container input {
+            flex: 1;
+            min-width: 0;
+            border: none;
+            outline: none;
+            background: transparent;
+            padding: 13px 22px;
+            color: #263b33;
+            font-size: .97rem;
+        }
 
-    /* CATEGORÍAS */
+
+        .search-container button {
+            min-width: 130px;
+            border: none;
+            border-radius: 999px;
+            padding: 12px 25px;
+            background: #08795b;
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+            transition: .2s ease;
+        }
+
+
+            .search-container button:hover {
+                background: #056047;
+                transform: translateY(-1px);
+            }
+
+
+    /* =========================================================
+           CATEGORÍAS
+           ========================================================= */
+
     .category-section {
-        margin-bottom: 30px;
+        position: relative;
+        z-index: 10;
+        margin: -23px auto 42px;
+        display: flex;
+        justify-content: center;
+        padding: 0 15px;
     }
+
 
     .category-buttons {
         display: flex;
         flex-wrap: wrap;
-        gap: 10px;
+        justify-content: center;
+        gap: 7px;
+        padding: 8px;
+        background: rgba(255,255,255,.97);
+        border-radius: 999px;
+        box-shadow: 0 8px 26px rgba(11,67,48,.16);
     }
+
 
     .category-btn {
-        border: 1px solid #d6d6d6;
+        border: none;
         background: white;
-        border-radius: 20px;
-        padding: 8px 18px;
+        color: #30463e;
+        border-radius: 999px;
+        padding: 10px 22px;
+        font-weight: 600;
         cursor: pointer;
-        transition: 0.2s;
+        transition: .2s;
     }
 
-    .category-btn:hover,
-    .category-btn.active {
-        background: #198754;
-        color: white;
-        border-color: #198754;
+
+        .category-btn:hover {
+            background: #e6f4ee;
+            color: #08795b;
+        }
+
+
+        .category-btn.active {
+            background: #08795b;
+            color: white;
+        }
+
+
+    /* =========================================================
+           CONTENIDO DESTACADO
+           ========================================================= */
+
+    .home-content {
+        position: relative;
+        z-index: 2;
     }
 
-    /* ENCABEZADO DEL CATÁLOGO */
+
     .catalog-header {
         display: flex;
         justify-content: space-between;
-        align-items: center;
-        margin-bottom: 20px;
+        align-items: end;
+        margin-bottom: 22px;
     }
 
-    .catalog-header h2 {
-        font-weight: 700;
+
+    .catalog-title h2 {
         margin: 0;
+        color: #172b24;
+        font-size: 2rem;
+        font-weight: 800;
     }
 
-    /* GRID */
+
+    .catalog-title p {
+        margin: 5px 0 0;
+        color: #6d7974;
+    }
+
+
+    #resultCount {
+        color: #69766f;
+        font-size: .9rem;
+    }
+
+
+    /* =========================================================
+           TARJETAS
+           ========================================================= */
+
     .media-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-        gap: 22px;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 24px;
     }
 
-    /* TARJETA */
+
     .media-card {
-        background: white;
-        border-radius: 16px;
+        position: relative;
         overflow: hidden;
-        border: 1px solid #e6e6e6;
-        transition: transform 0.2s, box-shadow 0.2s;
+        background: white;
+        border: 1px solid rgba(9,85,60,.10);
+        border-radius: 20px;
+        box-shadow: 0 8px 25px rgba(19,69,51,.10);
+        transition: transform .22s ease, box-shadow .22s ease;
     }
 
-    .media-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 12px 25px rgba(0,0,0,0.12);
+
+        .media-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 18px 40px rgba(19,69,51,.18);
+        }
+
+
+    /* =========================================================
+           IMAGEN TARJETA
+           ========================================================= */
+
+    .media-image-wrapper {
+        position: relative;
+        height: 225px;
+        overflow: hidden;
+        background: #dcece4;
     }
 
-    .media-card.highlight-card {
-        outline: 4px solid #ffc107;
-    }
 
-    /* IMAGEN */
     .media-image {
+        display: block;
         width: 100%;
-        height: 180px;
+        height: 100%;
         object-fit: cover;
+        transition: transform .35s ease;
     }
+
+
+    .media-card:hover .media-image {
+        transform: scale(1.05);
+    }
+
+
+    .media-image-wrapper::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient( to top, rgba(0,0,0,.45), transparent 58% );
+        pointer-events: none;
+    }
+
+
+    /* =========================================================
+           IMAGEN DE RESPALDO
+           ========================================================= */
 
     .media-placeholder {
-        height: 180px;
+        height: 225px;
         display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
-        flex-direction: column;
-        background: linear-gradient(135deg, #dff4e8, #b8dfc8);
-        color: #0b3d2e;
+        background: radial-gradient( circle at 20% 30%, #b9dfc6, transparent 35% ), linear-gradient( 135deg, #dcefe3, #9ccbad );
+        color: #0b4936;
     }
 
-    .media-placeholder span {
-        font-size: 3rem;
-        margin-bottom: 5px;
-    }
 
-    .media-placeholder strong {
-        font-size: 1.1rem;
-    }
+        .media-placeholder span {
+            font-size: 3rem;
+        }
 
-    /* CONTENIDO */
-    .media-content {
-        padding: 18px;
-    }
+
+        .media-placeholder strong {
+            margin-top: 8px;
+            font-size: 1.05rem;
+        }
+
+
+    /* =========================================================
+           ETIQUETA SOBRE FOTO
+           ========================================================= */
 
     .media-type {
-        display: inline-block;
-        background: #e8f5ee;
-        color: #198754;
-        border-radius: 20px;
-        padding: 4px 10px;
-        font-size: 0.8rem;
-        font-weight: 600;
-        margin-bottom: 10px;
+        position: absolute;
+        z-index: 4;
+        left: 15px;
+        bottom: 14px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 7px 13px;
+        background: rgba(5,109,79,.93);
+        color: white;
+        border: 1px solid rgba(255,255,255,.55);
+        border-radius: 999px;
+        font-size: .76rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        backdrop-filter: blur(5px);
     }
 
-    .media-content h3 {
-        font-size: 1.3rem;
-        font-weight: 700;
-        margin-bottom: 8px;
+
+    /* =========================================================
+           CONTENIDO TARJETA
+           ========================================================= */
+
+    .media-content {
+        padding: 18px 19px 17px;
     }
+
+
+        .media-content h3 {
+            margin: 0 0 7px;
+            color: #182c24;
+            font-size: 1.27rem;
+            font-weight: 800;
+        }
+
 
     .media-description {
-        color: #666;
-        font-size: 0.95rem;
-        min-height: 48px;
+        min-height: 52px;
+        margin-bottom: 14px;
+        color: #66736d;
+        font-size: .91rem;
+        line-height: 1.45;
     }
+
 
     .media-info {
-        border-top: 1px solid #eee;
-        margin-top: 15px;
+        margin-top: 12px;
         padding-top: 12px;
-        font-size: 0.88rem;
-        color: #555;
+        border-top: 1px solid #edf1ef;
+        color: #68756f;
+        font-size: .82rem;
     }
 
-    .media-info div {
-        margin-bottom: 5px;
-    }
 
-    /* ACCIONES */
+        .media-info div {
+            margin-bottom: 5px;
+        }
+
+
+        .media-info strong {
+            color: #364b42;
+        }
+
+
+    /* =========================================================
+           BOTONES
+           ========================================================= */
+
     .media-actions {
         display: flex;
-        gap: 8px;
+        gap: 9px;
         margin-top: 15px;
     }
 
-    .media-actions button {
-        flex: 1;
-        border-radius: 8px;
-        padding: 8px;
-        border: none;
-        cursor: pointer;
-    }
+
+        .media-actions form {
+            flex: 1;
+            display: flex;
+            margin: 0;
+        }
+
+
+        .media-actions button {
+            min-height: 39px;
+            border: none;
+            border-radius: 999px;
+            padding: 9px 13px;
+            font-size: .83rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: .18s ease;
+        }
+
 
     .btn-favorite {
-        background: #fff0f2;
-        color: #c7254e;
+        flex: 1;
+        background: #fff0f3;
+        color: #c93755;
     }
+
+
+        .btn-favorite:hover {
+            background: #ffe0e7;
+        }
+
 
     .btn-download {
-        background: #eef5ff;
-        color: #0d6efd;
         width: 100%;
+        background: #e6f5ee;
+        color: #08795b;
     }
 
-    .media-actions form {
-        flex: 1;
-        margin: 0;
-        display: flex;
-    }
 
-    /* SORPRÉNDEME */
+        .btn-download:hover {
+            background: #d5ecdf;
+        }
+
+
+    /* =========================================================
+           SORPRÉNDEME
+           ========================================================= */
+
     .surprise-section {
-        margin-top: 40px;
-        background: #f3fbf6;
-        border: 1px solid #cfe8d8;
-        border-radius: 16px;
-        padding: 25px;
+        position: relative;
+        overflow: hidden;
+        margin-top: 45px;
+        padding: 35px 40px;
         display: flex;
         justify-content: space-between;
         align-items: center;
+        gap: 30px;
+        background: linear-gradient( 110deg, #e9f8ef, #f4fbf7 );
+        border: 1px solid #d3eadd;
+        border-radius: 26px;
     }
 
-    .surprise-section h3 {
-        margin: 0 0 5px 0;
-        font-weight: 700;
+
+        /*
+           Elementos decorativos similares
+           a hojas tropicales.
+        */
+
+        .surprise-section::before {
+            content: "";
+            position: absolute;
+            left: -55px;
+            bottom: -55px;
+            width: 220px;
+            height: 115px;
+            border-radius: 100% 0 100% 0;
+            background: rgba(12,128,82,.12);
+            transform: rotate(28deg);
+        }
+
+
+        .surprise-section::after {
+            content: "";
+            position: absolute;
+            right: -55px;
+            top: -50px;
+            width: 240px;
+            height: 120px;
+            border-radius: 100% 0 100% 0;
+            background: rgba(15,140,90,.11);
+            transform: rotate(-25deg);
+        }
+
+
+    .surprise-text,
+    .btn-surprise {
+        position: relative;
+        z-index: 2;
     }
+
+
+    .surprise-section h3 {
+        margin: 0 0 5px;
+        color: #173d30;
+        font-size: 1.7rem;
+        font-weight: 800;
+    }
+
 
     .surprise-section p {
         margin: 0;
-        color: #666;
+        color: #69766f;
     }
 
-       .btn-surprise {
-        background: #198754;
-        color: white;
-        border: none;
-        border-radius: 10px;
-        padding: 12px 25px;
-        font-weight: 600;
-        cursor: pointer;
+
+    .btn-surprise {
         display: inline-block;
-        text-decoration: none;
-    }
-
-    .btn-surprise:hover {
-        background: #146c43;
+        padding: 13px 28px;
+        background: #08795b;
         color: white;
+        border-radius: 999px;
+        text-decoration: none;
+        font-weight: 700;
+        white-space: nowrap;
+        transition: .2s ease;
     }
 
-    /* MENSAJE SIN DATOS */
+
+        .btn-surprise:hover {
+            background: #056047;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+
+    /* =========================================================
+           SIN DATOS
+           ========================================================= */
+
     .empty-message {
-        padding: 60px 20px;
+        padding: 65px 20px;
         text-align: center;
-        color: #777;
+        color: #68756f;
+        background: #f6faf8;
+        border-radius: 20px;
     }
+
+
+    /* =========================================================
+           RESPONSIVE
+           ========================================================= */
+
+    @@media (max-width: 992px) {
+
+        .media-grid {
+            grid-template-columns: repeat(2, minmax(0,1fr));
+        }
+    }
+
 
     @@media (max-width: 768px) {
 
-        .hero-explora h1 {
-            font-size: 2rem;
+        .hero-explora {
+            min-height: 370px;
+            border-radius: 0 0 25px 25px;
         }
+
 
         .search-container {
             flex-direction: column;
+            border-radius: 20px;
         }
+
+
+            .search-container button {
+                width: 100%;
+            }
+
+
+        .category-buttons {
+            border-radius: 20px;
+        }
+
+
+        .catalog-header {
+            flex-direction: column;
+            align-items: start;
+            gap: 7px;
+        }
+
+
+        .media-grid {
+            grid-template-columns: 1fr;
+        }
+
 
         .surprise-section {
             flex-direction: column;
-            gap: 20px;
             text-align: center;
+            padding: 30px 22px;
         }
     }
 
@@ -300,29 +593,43 @@
 
 <div class="explora-page">
 
+
     <!-- =====================================================
-         HERO PRINCIPAL
+         HERO
          ===================================================== -->
 
     <section class="hero-explora">
 
-        <h1>Explora Costa Rica</h1>
+        <div class="hero-content">
 
-        <p>
-            Naturaleza, cultura, playas, biodiversidad y mucho más
-            en un solo lugar.
-        </p>
+            <h1>
+                Explora Costa Rica
+            </h1>
 
-        <div class="search-container">
 
-            <input id="searchInput"
-                   type="text"
-                   placeholder="Buscar destino, contenido o categoría..." />
+            <p class="hero-subtitle">
 
-            <button type="button"
-                    onclick="filterCards()">
-                Buscar
-            </button>
+                Naturaleza, cultura, playas,
+                biodiversidad y más en un solo lugar.
+
+            </p>
+
+
+            <div class="search-container">
+
+                <input id="searchInput"
+                       type="text"
+                       placeholder="Buscar lugares, destinos, naturaleza, turismo..." />
+
+
+                <button type="button"
+                        onclick="filterCards()">
+
+                    Buscar
+
+                </button>
+
+            </div>
 
         </div>
 
@@ -335,27 +642,31 @@
 
     <section class="category-section">
 
-        <h4 class="mb-3">
-            Explorar por categoría
-        </h4>
-
         <div class="category-buttons">
+
 
             <button type="button"
                     class="category-btn active"
                     data-category="all"
                     onclick="filterCategory(this)">
+
                 Todos
+
             </button>
+
 
             @foreach (var category in categories)
             {
+
                 <button type="button"
                         class="category-btn"
                         data-category="@category.ToLower()"
                         onclick="filterCategory(this)">
+
                     @category
+
                 </button>
+
             }
 
         </div>
@@ -364,17 +675,32 @@
 
 
     <!-- =====================================================
-         CATÁLOGO
+         CONTENIDO DESTACADO
          ===================================================== -->
 
-    <section>
+    <section class="home-content">
+
 
         <div class="catalog-header">
 
-            <h2>Contenido destacado</h2>
+            <div class="catalog-title">
+
+                <h2>
+                    Contenido destacado
+                </h2>
+
+                <p>
+                    Descubre algunos de los destinos
+                    más increíbles de Costa Rica.
+                </p>
+
+            </div>
+
 
             <span id="resultCount">
+
                 @(Model?.Count() ?? 0) resultados
+
             </span>
 
         </div>
@@ -382,58 +708,156 @@
 
         @if (Model != null && Model.Any())
         {
-            <div class="media-grid" id="mediaGrid">
+
+            <div class="media-grid"
+                 id="mediaGrid">
+
 
                 @foreach (var item in Model)
                 {
+
+                    var destinationText =
+                    (item.Destination ?? "")
+                    .ToLower();
+
+
+                    var titleText =
+                    (item.Title ?? "")
+                    .ToLower();
+
+
+                    var comparisonText =
+                    destinationText +
+                    " " +
+                    titleText;
+
+
+                    string? cardImage = null;
+
+
+                    /*
+                    PRIMERO:
+
+                    Si la base de datos o una API
+                    ya trae ImageUrl, se utiliza.
+
+                    SI NO:
+
+                    Utilizamos nuestras imágenes
+                    locales como respaldo.
+                    */
+
+                    if (!string.IsNullOrWhiteSpace(item.ImageUrl))
+                    {
+                        cardImage = item.ImageUrl;
+                    }
+                    else if (comparisonText.Contains("arenal"))
+                    {
+                        cardImage =
+                        "/images/home/arenalunsplash.jpg";
+                    }
+                    else if (comparisonText.Contains("monteverde"))
+                    {
+                        cardImage =
+                        "/images/home/monteverdeunsplash.jpg";
+                    }
+                    else if (comparisonText.Contains("guanacaste"))
+                    {
+                        cardImage =
+                        "/images/home/guanacasteunsplash.jpg";
+                    }
+
+
+                    var typeIcon = "📷";
+
+
+                    if (item.ContentType == "Video")
+                    {
+                        typeIcon = "▶";
+                    }
+                    else if (item.ContentType == "Noticia")
+                    {
+                        typeIcon = "📰";
+                    }
+                    else if (item.ContentType == "Clima")
+                    {
+                        typeIcon = "☀";
+                    }
+                    else if (item.ContentType == "Libro")
+                    {
+                        typeIcon = "📚";
+                    }
+                    else if (item.ContentType == "Biodiversidad")
+                    {
+                        typeIcon = "🌿";
+                    }
+
+
                     <article class="media-card"
-                             data-title="@((item.Title ?? "").ToLower())"
+                             data-title="@titleText"
                              data-description="@((item.Description ?? "").ToLower())"
                              data-category="@((item.Category ?? "").ToLower())"
-                             data-destination="@((item.Destination ?? "").ToLower())"
+                             data-destination="@destinationText"
                              data-media-id="@item.MediaId">
 
+
                         <!-- IMAGEN -->
-                        @if (!string.IsNullOrWhiteSpace(item.ImageUrl))
+                        @if (!string.IsNullOrWhiteSpace(cardImage))
                         {
-                            <img class="media-image"
-                                 src="@item.ImageUrl"
-                                 alt="@item.Title" />
-                        }
-                        else
-                        {
-                            <div class="media-placeholder">
 
-                                @if (item.ContentType == "Video")
-                                {
-                                    <span>🎬</span>
-                                }
-                                else if (item.ContentType == "Noticia")
-                                {
-                                    <span>📰</span>
-                                }
-                                else if (item.ContentType == "Clima")
-                                {
-                                    <span>🌦️</span>
-                                }
-                                else if (item.ContentType == "Libro")
-                                {
-                                    <span>📚</span>
-                                }
-                                else if (item.ContentType == "Biodiversidad")
-                                {
-                                    <span>🌿</span>
-                                }
-                                else
-                                {
-                                    <span>📷</span>
-                                }
+                            <div class="media-image-wrapper">
 
-                                <strong>
-                                    @item.Destination
-                                </strong>
+
+                                <img class="media-image"
+                                     src="@cardImage"
+                                     alt="@item.Title"
+                                     loading="lazy" />
+
+
+                                <span class="media-type">
+
+                                    <span>
+                                        @typeIcon
+                                    </span>
+
+                                    @item.ContentType
+
+                                </span>
 
                             </div>
+
+                        }
+
+                        else
+
+                        {
+
+                            <div class="media-image-wrapper">
+
+
+                                <div class="media-placeholder">
+
+                                    <span>
+                                        @typeIcon
+                                    </span>
+
+
+                                    <strong>
+                                        @item.Destination
+                                    </strong>
+
+                                </div>
+
+
+                                <span class="media-type">
+
+                                    @typeIcon
+                                    @item.ContentType
+
+                                </span>
+
+                            </div>
+
                         }
 
 
@@ -441,48 +865,82 @@
 
                         <div class="media-content">
 
-                            <span class="media-type">
-                                @item.ContentType
-                            </span>
 
                             <h3>
                                 @item.Title
                             </h3>
 
+
                             <p class="media-description">
+
                                 @item.Description
+
                             </p>
 
 
                             <div class="media-info">
 
+
                                 @if (!string.IsNullOrWhiteSpace(item.Category))
                                 {
+
                                     <div>
-                                        🏷️ <strong>Categoría:</strong>
+
+                                        🍃
+                                        <strong>
+                                            Categoría:
+                                        </strong>
+
                                         @item.Category
+
                                     </div>
+
                                 }
+
 
                                 @if (!string.IsNullOrWhiteSpace(item.Destination))
                                 {
+
                                     <div>
-                                        📍 <strong>Destino:</strong>
+
+                                        📍
+                                        <strong>
+                                            Destino:
+                                        </strong>
+
                                         @item.Destination
+
                                     </div>
+
                                 }
+
 
                                 @if (!string.IsNullOrWhiteSpace(item.Province))
                                 {
+
                                     <div>
-                                        🗺️ <strong>Provincia:</strong>
+
+                                        🗺️
+                                        <strong>
+                                            Provincia:
+                                        </strong>
+
                                         @item.Province
+
                                     </div>
+
                                 }
 
+
                                 <div>
-                                    🌐 <strong>Fuente:</strong>
+
+                                    🌐
+                                    <strong>
+                                        Fuente:
+                                    </strong>
+
                                     @item.Source
+
                                 </div>
 
                             </div>
@@ -492,21 +950,37 @@
 
                             <div class="media-actions">
 
+
                                 <button type="button"
                                         class="btn-favorite"
                                         data-media-id="@item.MediaId"
                                         onclick="toggleFavorite(this)">
+
                                     ♡ Favorito
+
                                 </button>
+
 
                                 <form asp-controller="Descargas"
                                       asp-action="DescargarJson"
                                       method="post">
+
+
                                     @Html.AntiForgeryToken()
-                                    <input type="hidden" name="mediaId" value="@item.MediaId" />
-                                    <button type="submit" class="btn-download">
+
+
+                                    <input type="hidden"
+                                           name="mediaId"
+                                           value="@item.MediaId" />
+
+
+                                    <button type="submit"
+                                            class="btn-download">
+
                                         ↓ Descargar
+
                                     </button>
+
                                 </form>
 
                             </div>
@@ -514,51 +988,70 @@
                         </div>
 
                     </article>
+
                 }
 
             </div>
+
         }
+
         else
+
         {
+
             <div class="empty-message">
 
-                <h3>No hay contenido disponible</h3>
+                <h3>
+                    No hay contenido disponible
+                </h3>
 
                 <p>
-                    No se encontraron registros en la base de datos.
+                    No se encontraron registros
+                    en la base de datos.
                 </p>
 
             </div>
+
         }
 
     </section>
 
 
     <!-- =====================================================
-         ELEMENTO SORPRESA
+         SORPRÉNDEME
          ===================================================== -->
 
     <section class="surprise-section">
 
-        <div>
 
-            <h3>🎲 ¿No sabes dónde ir?</h3>
+        <div class="surprise-text">
+
+
+            <h3>
+                🎲 ¡Sorpréndeme!
+            </h3>
+
 
             <p>
-                Deja que Explora Costa Rica seleccione un destino por ti.
+                Descubre un destino aleatorio
+                de Costa Rica.
             </p>
+
 
         </div>
 
-        @* Selección aleatoria real desde SQL Server
-           (DestinationsController -> Surprise) *@
+
         <a class="btn-surprise"
            asp-controller="Destinations"
            asp-action="Surprise">
-            Sorpréndeme
+
+            Mostrar destino aleatorio →
+
         </a>
 
+
     </section>
+
 
 </div>
 
@@ -572,15 +1065,20 @@
     function filterCards() {
 
         const search =
-            document.getElementById("searchInput")
+            document
+                .getElementById("searchInput")
                 .value
                 .toLowerCase()
                 .trim();
 
+
         const cards =
-            document.querySelectorAll(".media-card");
+            document
+                .querySelectorAll(".media-card");
+
 
         let visible = 0;
+
 
         cards.forEach(card => {
 
@@ -596,20 +1094,29 @@
             const destination =
                 card.dataset.destination || "";
 
+
             const matches =
                 title.includes(search) ||
                 description.includes(search) ||
                 category.includes(search) ||
                 destination.includes(search);
 
-            card.style.display =
-                matches ? "block" : "none";
 
-            if (matches)
+            card.style.display =
+                matches
+                    ? "block"
+                    : "none";
+
+
+            if (matches) {
                 visible++;
+            }
+
         });
 
+
         updateResultCount(visible);
+
     }
 
 
@@ -622,10 +1129,12 @@
         const category =
             button.dataset.category;
 
+
         document
             .querySelectorAll(".category-btn")
             .forEach(btn =>
                 btn.classList.remove("active"));
+
 
         button.classList.add("active");
 
@@ -633,25 +1142,36 @@
         const cards =
             document.querySelectorAll(".media-card");
 
+
         let visible = 0;
+
 
         cards.forEach(card => {
 
             const cardCategory =
                 card.dataset.category;
 
+
             const show =
                 category === "all" ||
                 cardCategory === category;
 
-            card.style.display =
-                show ? "block" : "none";
 
-            if (show)
+            card.style.display =
+                show
+                    ? "block"
+                    : "none";
+
+
+            if (show) {
                 visible++;
+            }
+
         });
 
+
         updateResultCount(visible);
+
     }
 
 
@@ -661,12 +1181,17 @@
 
     function updateResultCount(number) {
 
-        document.getElementById("resultCount")
+        document
+            .getElementById("resultCount")
             .textContent =
-            number + " resultados";
+                number + " resultados";
+
     }
 
-    // Buscar también con ENTER
+
+    // ========================================================
+    // ENTER EN BUSCADOR
+    // ========================================================
 
     document
         .getElementById("searchInput")
@@ -675,7 +1200,9 @@
             function(event) {
 
                 if (event.key === "Enter") {
+
                     filterCards();
+
                 }
 
             }
@@ -684,10 +1211,19 @@
 </script>
 
 
-@* Favoritos (Persona 4): token antiforgery + script que guarda en BD y pinta el corazón *@
 @Html.AntiForgeryToken()
 
+
 @section Scripts {
-    <link rel="stylesheet" href="~/css/favoritos.css" asp-append-version="true" />
-    <script src="~/js/favoritos.js" asp-append-version="true"></script>
+
+    <link rel="stylesheet"
+          href="~/css/favoritos.css"
+          asp-append-version="true" />
+
+
+    <script src="~/js/favoritos.js"
+            asp-append-version="true">
+
+    </script>
+
 }

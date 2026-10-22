@@ -42,6 +42,11 @@ builder.Services.AddScoped<IDescargasService, DescargasService>();
 // Lista de destinos, detalle y selección aleatoria real.
 builder.Services.AddScoped<IDestinationService, DestinationService>();
 
+// Servicio de Favoritos
+// Agrega, elimina, consulta y administra los favoritos del usuario.
+builder.Services.AddScoped<IFavoritosService, FavoritosService>();
+
+
 // ============================================================
 // API EXTERNA: GNEWS
 // ============================================================
@@ -50,6 +55,7 @@ builder.Services.AddHttpClient<INoticiasApiService, NoticiasApiService>(
     client =>
     {
         client.Timeout = TimeSpan.FromSeconds(20);
+
         client.DefaultRequestHeaders.UserAgent.ParseAdd(
             "ExploraCostaRica/1.0"
         );
@@ -67,6 +73,8 @@ builder.Services.AddHttpClient<IFotografiasApiService, FotografiasApiService>(
         client.Timeout = TimeSpan.FromSeconds(20);
     }
 );
+
+
 // ============================================================
 // API EXTERNA: INATURALIST (BIODIVERSIDAD)
 // ============================================================
@@ -77,8 +85,10 @@ builder.Services.AddHttpClient<IBiodiversidadApiService, BiodiversidadApiService
     client =>
     {
         client.Timeout = TimeSpan.FromSeconds(20);
+
         client.DefaultRequestHeaders.UserAgent.ParseAdd(
-            "ExploraCostaRica/1.0");
+            "ExploraCostaRica/1.0"
+        );
     }
 );
 
@@ -88,11 +98,13 @@ builder.Services.AddHttpClient<IBiodiversidadApiService, BiodiversidadApiService
 // ============================================================
 
 var app = builder.Build();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
 
 // ============================================================
 // CONFIGURACIÓN DEL PIPELINE HTTP

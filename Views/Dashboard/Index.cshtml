@@ -1,0 +1,383 @@
+﻿@model ExploraCostaRica.Models.ViewModels.DashboardViewModel
+@using ExploraCostaRica.Models.Exchange
+@using System.Globalization
+
+@{
+    ViewData["Title"] = "Dashboard";
+
+    var f = Model.Filter;
+    var errorBd = ViewBag.ErrorBaseDatos as string;
+    var vacio = errorBd == null && Model.TotalItems == 0;
+
+    string Icono(string tipo) => tipo switch
+    {
+        "image" => "🖼️",
+        "gif" => "🎞️",
+        "video" => "🎬",
+        "audio" => "🎵",
+        _ => "📰"
+    };
+
+    string NombreTipo(string tipo) => tipo switch
+    {
+        "image" => "Imagen",
+        "gif" => "GIF",
+        "video" => "Video",
+        "audio" => "Audio",
+        _ => "Texto"
+    };
+
+    string NombreCategoria(string? categoria) =>
+        string.IsNullOrEmpty(categoria)
+            ? "Sin categoría"
+            : char.ToUpper(categoria[0]) + categoria.Substring(1);
+
+    string Fecha(DateTime fecha) =>
+        fecha.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture);
+
+
+    Dictionary<string, string?> Ruta(int? pagina = null)
+    {
+        var d = new Dictionary<string, string?>();
+
+        if (!string.IsNullOrEmpty(f.Q)) d["Q"] = f.Q;
+        if (!string.IsNullOrEmpty(f.Source)) d["Source"] = f.Source;
+        if (!string.IsNullOrEmpty(f.MediaType)) d["MediaType"] = f.MediaType;
+        if (!string.IsNullOrEmpty(f.Category)) d["Category"] = f.Category;
+        if (f.From.HasValue) d["From"] = f.From.Value.ToString("yyyy-MM-dd");
+        if (f.To.HasValue) d["To"] = f.To.Value.ToString("yyyy-MM-dd");
+        if (f.Sort != "recientes") d["Sort"] = f.Sort;
+        if (pagina.HasValue && pagina.Value > 1) d["Page"] = pagina.Value.ToString();
+
+        return d;
+    }
+}
+
+<link rel="stylesheet" href="~/css/dashboard.css" asp-append-version="true" />
+
+<div class="db-page">
+
+
+    <section class="db-hero">
+        <h1>Dashboard</h1>
+        <p>
+            Contenido de varias fuentes en un solo lugar. Exportá e importá archivos
+            en el formato común v1.0 para compartirlos con los otros grupos.
+        </p>
+
+        <div class="db-stats">
+            <div class="db-stat">
+                <strong>@Model.TotalItems</strong>
+                <span>Items</span>
+            </div>
+            <div class="db-stat">
+                <strong>@Model.TotalSources</strong>
+                <span>Fuentes</span>
+            </div>
+
+            @foreach (var tipo in MediaTypes.All)
+            {
+                Model.ByMediaType.TryGetValue(tipo, out var cantidad);
+
+                if (cantidad > 0)
+                {
+                    <div class="db-stat">
+                        <strong>@cantidad</strong>
+                        <span>@Icono(tipo) @NombreTipo(tipo)</span>
+                    </div>
+                }
+            }
+        </div>
+    </section>
+
+
+    @if (TempData["Exito"] is string exito)
+    {
+        <div class="db-alert db-alert-ok" role="status"> @exito</div>
+    }
+
+    @if (TempData["Error"] is string error)
+    {
+        <div class="db-alert db-alert-error" role="alert">
+            <div> @error</div>
+
+            @if (TempData["Detalle"] is string detalle)
+            {
+                <ul class="db-issues">
+                    @foreach (var linea in detalle.Split('\n'))
+                    {
+                        <li>@linea</li>
+                    }
+                </ul>
+            }
+        </div>
+    }
+
+    @if (TempData["Notas"] is string notas)
+    {
+        <div class="db-alert db-alert-info" role="status">
+            <ul class="db-issues">
+                @foreach (var nota in notas.Split('\n'))
+                {
+                    <li>@nota</li>
+                }
+            </ul>
+        </div>
+    }
+
+    @if (errorBd != null)
+    {
+        <div class="db-alert db-alert-error" role="alert">
+            <div>
+                No se pudo leer el dashboard de la base de datos. Ejecutá
+                <code>ScriptSQLDashboard.sql</code> en SQL Server para crear las tablas
+                <code>Sources</code> y <code>SourceItems</code>.
+            </div>
+            <ul class="db-issues"><li>@errorBd</li></ul>
+        </div>
+    }
+
+
+    <section class="db-actions">
+
+        <form class="db-import"
+              method="post"
+              asp-action="Importar"
+              enctype="multipart/form-data"
+              id="importForm">
+            <label class="db-file" for="archivo">
+                <span class="db-file-btn">Elegir archivo .json</span>
+                <span class="db-file-name" id="archivoNombre">Ningún archivo seleccionado</span>
+            </label>
+            <input type="file" id="archivo" name="archivo" accept=".json,application/json" hidden />
+            <button type="submit" class="db-btn db-btn-primary" id="importBtn" disabled>
+                ⬆️ Importar
+            </button>
+        </form>
+
+        <div class="db-actions-right">
+            <form method="post" asp-action="Sincronizar" id="syncForm">
+                <button type="submit" class="db-btn" id="syncBtn"
+                        title="Consulta GNews, Unsplash e iNaturalist y los guarda en el dashboard">
+                    Sincronizar mis fuentes
+                </button>
+            </form>
+
+            <a class="db-btn" asp-action="Exportar" asp-all-route-data="Ruta()"
+               title="Descarga lo que se ve con los filtros actuales">
+                ⬇️ Exportar @(f.HasFilters ? "esta vista" : "todo")
+            </a>
+        </div>
+    </section>
+
+    <p class="db-help">
+        Formato:
+        <a href="~/schema/dashboard-export.v1.0.schema.json" download>schema.json</a> ·
+        <a href="~/schema/ejemplo-formato-comun.json" download>archivo de ejemplo</a> ·
+        Para validar un archivo antes de compartirlo use
+        <a href="https://jsonschemavalidator.net" target="_blank" rel="noopener noreferrer">jsonschemavalidator.net</a>.
+    </p>
+
+    @if (vacio)
+    {
+
+        <section class="db-empty">
+            <div class="db-empty-icon"></div>
+            <h2>Todavía no hay contenido</h2>
+            <p>
+                Importá un archivo JSON de otro grupo, o usá
+                <strong>Sincronizar mis fuentes</strong> para traer noticias, fotografías
+                y observaciones de biodiversidad desde las APIs de Explora Costa Rica.
+            </p>
+        </section>
+    }
+    else if (errorBd == null)
+    {
+
+        <section class="db-sources">
+            <a class="db-chip @(string.IsNullOrEmpty(f.Source) ? "active" : "")"
+               asp-action="Index">
+                Todas
+            </a>
+
+            @foreach (var fuente in Model.Sources)
+            {
+                <span class="db-chip-group">
+                    <a class="db-chip @(f.Source == fuente.Key ? "active" : "")"
+                       asp-action="Index"
+                       asp-route-Source="@fuente.Key"
+                       asp-route-Sort="@f.Sort"
+                       title="@(fuente.Url ?? fuente.Key)">
+                        @fuente.Name <em>@fuente.Count</em>
+                    </a>
+                    <a class="db-chip-dl"
+                       asp-action="Exportar"
+                       asp-route-Source="@fuente.Key"
+                       title="Exportar solo @fuente.Name">⬇</a>
+                </span>
+            }
+        </section>
+
+
+        <form method="get" asp-action="Index" class="db-filters">
+            <input type="search" name="Q" value="@f.Q" placeholder="Buscar en el título…" maxlength="100" />
+
+            <select name="Source" aria-label="Fuente">
+                <option value="">Todas las fuentes</option>
+                @foreach (var fuente in Model.Sources)
+                {
+                    <option value="@fuente.Key" selected="@(f.Source == fuente.Key)">@fuente.Name</option>
+                }
+            </select>
+
+            <select name="MediaType" aria-label="Tipo de medio">
+                <option value="">Todos los tipos</option>
+                @foreach (var tipo in MediaTypes.All)
+                {
+                    <option value="@tipo" selected="@(f.MediaType == tipo)">@Icono(tipo) @NombreTipo(tipo)</option>
+                }
+            </select>
+
+            <select name="Category" aria-label="Categoría">
+                <option value="">Todas las categorías</option>
+                @foreach (var categoria in ExportCategories.All)
+                {
+                    <option value="@categoria" selected="@(f.Category == categoria)">@NombreCategoria(categoria)</option>
+                }
+            </select>
+
+            <label class="db-date">Desde
+                <input type="date" name="From" value="@f.From?.ToString("yyyy-MM-dd")" />
+            </label>
+
+            <label class="db-date">Hasta
+                <input type="date" name="To" value="@f.To?.ToString("yyyy-MM-dd")" />
+            </label>
+
+            <select name="Sort" aria-label="Orden">
+                <option value="recientes" selected="@(f.Sort == "recientes")">Más recientes</option>
+                <option value="antiguos" selected="@(f.Sort == "antiguos")">Más antiguos</option>
+                <option value="titulo" selected="@(f.Sort == "titulo")">Título (A-Z)</option>
+            </select>
+
+            <button type="submit" class="db-btn db-btn-primary">Filtrar</button>
+
+            @if (f.HasFilters)
+            {
+                <a class="db-btn" asp-action="Index">Limpiar</a>
+            }
+        </form>
+
+
+        <div class="db-result-bar">
+            <strong>@Model.Total</strong> @(Model.Total == 1 ? "item" : "items")
+            @if (f.HasFilters)
+            {
+                <span>con los filtros actuales</span>
+            }
+        </div>
+
+        @if (Model.Items.Count == 0)
+        {
+            <section class="db-empty">
+                <div class="db-empty-icon">🔍</div>
+                <h2>Sin resultados</h2>
+                <p>Ningún item cumple esos filtros. Probá con otro rango de fechas o quitá algún filtro.</p>
+            </section>
+        }
+        else
+        {
+            <div class="db-grid">
+                @foreach (var item in Model.Items)
+                {
+                    <article class="db-card">
+                        <div class="db-thumb">
+                            @if (item.Thumbnail != null)
+                            {
+                                <img class="db-thumb-img" src="@item.Thumbnail" alt="" loading="lazy"
+                                     referrerpolicy="no-referrer" />
+                            }
+                            <span class="db-thumb-icon">@Icono(item.MediaType)</span>
+                            <span class="db-badge">@Icono(item.MediaType) @NombreTipo(item.MediaType)</span>
+                        </div>
+
+                        <div class="db-card-body">
+                            <h3 title="@item.Title">@item.Title</h3>
+
+                            @if (!string.IsNullOrWhiteSpace(item.Description))
+                            {
+                                <p class="db-desc">@item.Description</p>
+                            }
+
+                            <div class="db-meta">
+                                <span>@item.SourceName</span>
+                                <span>·</span>
+                                <time datetime="@item.CreatedAt.ToString("yyyy-MM-dd'T'HH:mm:ss'Z'", CultureInfo.InvariantCulture)">@Fecha(item.CreatedAt)</time>
+                                @if (!string.IsNullOrEmpty(item.Category))
+                                {
+                                    <span class="db-tag">@NombreCategoria(item.Category)</span>
+                                }
+                            </div>
+
+                            <div class="db-card-actions">
+                                @if (item.Url != null)
+                                {
+                                    <a href="@item.Url" target="_blank" rel="noopener noreferrer">Abrir ↗</a>
+                                }
+                                <button type="button" class="db-link js-ver-json"
+                                        data-url="@Url.Action("Item", new { id = item.Id })"
+                                        data-title="@item.Title">
+                                    Ver JSON
+                                </button>
+                                <a asp-action="ExportarItem" asp-route-id="@item.Id" title="Descargar este item en el formato común">
+                                    ⬇ JSON
+                                </a>
+                            </div>
+                        </div>
+                    </article>
+                }
+            </div>
+
+            @if (Model.TotalPages > 1)
+            {
+                <nav class="db-pager" aria-label="Páginas">
+                    @if (f.Page > 1)
+                    {
+                        <a asp-action="Index" asp-all-route-data="Ruta(f.Page - 1)">← Anterior</a>
+                    }
+
+                    <span>Página @f.Page de @Model.TotalPages</span>
+
+                    @if (f.Page < Model.TotalPages)
+                    {
+                        <a asp-action="Index" asp-all-route-data="Ruta(f.Page + 1)">Siguiente →</a>
+                    }
+                </nav>
+            }
+        }
+    }
+
+</div>
+
+
+<div class="modal fade" id="jsonModal" tabindex="-1" aria-labelledby="jsonModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="jsonModalTitle">JSON del item</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <pre class="db-json" id="jsonModalBody">Cargando…</pre>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="db-btn" id="jsonCopy">Copiar</button>
+                <button type="button" class="db-btn db-btn-primary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/dashboard.js" asp-append-version="true"></script>
+}

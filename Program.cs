@@ -46,6 +46,13 @@ builder.Services.AddScoped<IDestinationService, DestinationService>();
 // Agrega, elimina, consulta y administra los favoritos del usuario.
 builder.Services.AddScoped<IFavoritosService, FavoritosService>();
 
+// Servicios del Dashboard (formato JSON común v1.0)
+// Dashboard: consulta, importa y exporta Sources / SourceItems.
+builder.Services.AddScoped<IDashboardService, DashboardService>();
+
+// Sincronizar: convierte GNews, Unsplash e iNaturalist al formato común.
+builder.Services.AddScoped<IDashboardSyncService, DashboardSyncService>();
+
 
 // ============================================================
 // API EXTERNA: GNEWS

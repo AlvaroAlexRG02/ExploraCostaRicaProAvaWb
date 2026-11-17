@@ -4,6 +4,8 @@ namespace ExploraCostaRica.Services
 {
     public interface IExplorarService
     {
-        Task<ExplorarViewModel> BuscarAsync(ExplorarFiltro filtro);
+        // userId: el usuario que inició sesión (null si nadie inició sesión).
+        // Se usa para guardar su historial de búsquedas (SearchHistory).
+        Task<ExplorarViewModel> BuscarAsync(ExplorarFiltro filtro, int? userId);
     }
 }

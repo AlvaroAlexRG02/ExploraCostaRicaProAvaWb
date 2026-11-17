@@ -160,6 +160,37 @@ builder.Services.AddHttpClient<IWikimediaApiService, WikimediaApiService>(
 
 
 // ============================================================
+// API EXTERNA: YOUTUBE (VIDEOS) - API 4
+// ============================================================
+
+// La API Key se lee de User Secrets ("YouTube:ApiKey").
+// Usa la caché en memoria (AddMemoryCache) para no gastar cuota.
+builder.Services.AddHttpClient<IYouTubeApiService, YouTubeApiService>(
+    client =>
+    {
+        client.Timeout = TimeSpan.FromSeconds(20);
+    }
+);
+
+
+// ============================================================
+// API EXTERNA: GBIF (BIODIVERSIDAD CIENTÍFICA) - API 10
+// ============================================================
+
+// No requiere API Key.
+builder.Services.AddHttpClient<IGbifApiService, GbifApiService>(
+    client =>
+    {
+        client.Timeout = TimeSpan.FromSeconds(20);
+
+        client.DefaultRequestHeaders.UserAgent.ParseAdd(
+            "ExploraCostaRica/1.0 (proyecto academico SC-701)"
+        );
+    }
+);
+
+
+// ============================================================
 // CREAR LA APLICACIÓN
 // ============================================================
 

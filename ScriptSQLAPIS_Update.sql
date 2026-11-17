@@ -287,6 +287,81 @@ GO
 
 
 -- ============================================================
+-- API 4 - YOUTUBE DATA API v3 (VIDEOS)
+-- La API Key NO se guarda aqui: va en User Secrets
+-- con el nombre YouTube:ApiKey.
+-- ============================================================
+
+INSERT INTO ApiSources
+(
+    Name,
+    Description,
+    BaseUrl,
+    WebsiteUrl,
+    ContentTypeId,
+    RequiresApiKey,
+    ApiKeySettingName
+)
+SELECT
+    'YouTube',
+    'Videos de destinos, naturaleza y cultura de Costa Rica.',
+    'https://www.googleapis.com/youtube/v3/',
+    'https://www.youtube.com',
+    (
+        SELECT ContentTypeId
+        FROM ContentTypes
+        WHERE Name = 'Video'
+    ),
+    1,
+    'YouTube:ApiKey'
+WHERE NOT EXISTS
+(
+    SELECT 1
+    FROM ApiSources
+    WHERE Name = 'YouTube'
+);
+
+GO
+
+
+-- ============================================================
+-- API 10 - GBIF (BIODIVERSIDAD CIENTIFICA)
+-- No requiere API Key.
+-- ============================================================
+
+INSERT INTO ApiSources
+(
+    Name,
+    Description,
+    BaseUrl,
+    WebsiteUrl,
+    ContentTypeId,
+    RequiresApiKey,
+    ApiKeySettingName
+)
+SELECT
+    'GBIF',
+    'Registros cientificos de especies observadas en Costa Rica (Global Biodiversity Information Facility).',
+    'https://api.gbif.org/v1/',
+    'https://www.gbif.org',
+    (
+        SELECT ContentTypeId
+        FROM ContentTypes
+        WHERE Name = 'Biodiversidad'
+    ),
+    0,
+    NULL
+WHERE NOT EXISTS
+(
+    SELECT 1
+    FROM ApiSources
+    WHERE Name = 'GBIF'
+);
+
+GO
+
+
+-- ============================================================
 -- DASHBOARD - FORMATO JSON COMUN v1.0
 --
 -- Crea las tablas Sources y SourceItems.

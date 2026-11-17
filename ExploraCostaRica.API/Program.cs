@@ -97,6 +97,24 @@ builder.Services.AddHttpClient<
 
 
 // ============================================================
+// API 8 - WIKIMEDIA COMMONS (CULTURA)
+// ============================================================
+
+builder.Services.AddHttpClient<
+    IWikimediaApiService,
+    WikimediaApiService>(
+    client =>
+    {
+        client.Timeout = TimeSpan.FromSeconds(20);
+
+        client.DefaultRequestHeaders.UserAgent.ParseAdd(
+            "ExploraCostaRica/1.0 (proyecto academico SC-701)"
+        );
+    }
+);
+
+
+// ============================================================
 // CREAR APLICACIÓN
 // ============================================================
 

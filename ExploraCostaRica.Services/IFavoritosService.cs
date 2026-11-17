@@ -2,21 +2,23 @@
 
 namespace ExploraCostaRica.Services
 {
+
     public interface IFavoritosService
     {
         Task<List<VwUserFavorite>> ObtenerFavoritosAsync(
+            int userId,
             string tipo = "todos",
             string orden = "recientes");
 
-        Task<List<long>> ObtenerIdsAsync();
+        Task<List<long>> ObtenerIdsAsync(int userId);
 
         Task<(bool Exitoso, bool YaExistia, int Cantidad, string? Error)>
-            AgregarAsync(long mediaId);
+            AgregarAsync(int userId, long mediaId);
 
         Task<(bool Exitoso, int Cantidad, string? Error)>
-            QuitarAsync(long mediaId);
+            QuitarAsync(int userId, long mediaId);
 
         Task<(bool Exitoso, bool EsFavorito, int Cantidad, string? Error)>
-            ToggleAsync(long mediaId);
+            ToggleAsync(int userId, long mediaId);
     }
 }

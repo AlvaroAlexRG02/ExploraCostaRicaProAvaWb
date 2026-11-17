@@ -1,0 +1,59 @@
+﻿@model ExploraCostaRica.Models.ViewModels.RegisterViewModel
+
+@{
+    ViewData["Title"] = "Crear cuenta";
+}
+
+<div class="auth-page">
+    <div class="auth-card">
+
+        <h1>Crear cuenta</h1>
+        <p class="auth-sub">Guarda tus lugares favoritos y tus descargas.</p>
+
+        <form asp-action="Register" method="post" novalidate>
+
+            <input type="hidden" asp-for="ReturnUrl" />
+
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2"></div>
+
+            <div class="mb-3">
+                <label asp-for="Name" class="form-label"></label>
+                <input asp-for="Name" class="form-control" autocomplete="name" autofocus />
+                <span asp-validation-for="Name" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Email" class="form-label"></label>
+                <input asp-for="Email" class="form-control" autocomplete="email" />
+                <span asp-validation-for="Email" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Password" class="form-label"></label>
+                <input asp-for="Password" class="form-control" autocomplete="new-password" />
+                <span class="auth-hint">Mínimo 8 caracteres, con letras y números.</span><br />
+                <span asp-validation-for="Password" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="ConfirmPassword" class="form-label"></label>
+                <input asp-for="ConfirmPassword" class="form-control" autocomplete="new-password" />
+                <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+            </div>
+
+            <button type="submit" class="auth-btn">Crear cuenta</button>
+
+        </form>
+
+        <p class="auth-alt">
+            ¿Ya tienes cuenta?
+            <a asp-action="Login" asp-route-returnUrl="@Model.ReturnUrl">Inicia sesión</a>
+        </p>
+
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+}

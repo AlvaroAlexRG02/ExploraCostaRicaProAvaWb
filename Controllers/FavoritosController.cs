@@ -1,13 +1,22 @@
+using ExploraCostaRica.Extensions;
 using ExploraCostaRica.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ExploraCostaRica.Controllers
 {
+
+    [Authorize]
     public class FavoritosController : Controller
     {
         private const string DestinationContentType = "Lugar";
 
         private readonly IFavoritosService _favoritosService;
+
+
+        private int UserId => User.GetUserId()
+            ?? throw new InvalidOperationException(
+                "La sesión no tiene un UserId válido.");
 
         public FavoritosController(
             IFavoritosService favoritosService)
@@ -42,6 +51,7 @@ namespace ExploraCostaRica.Controllers
 
             var items =
                 await _favoritosService.ObtenerFavoritosAsync(
+                    UserId,
                     tipo,
                     orden);
 
@@ -62,7 +72,7 @@ namespace ExploraCostaRica.Controllers
         public async Task<IActionResult> Ids()
         {
             var ids =
-                await _favoritosService.ObtenerIdsAsync();
+                await _favoritosService.ObtenerIdsAsync(UserId);
 
             return Json(ids);
         }
@@ -79,6 +89,7 @@ namespace ExploraCostaRica.Controllers
         {
             var resultado =
                 await _favoritosService.AgregarAsync(
+                    UserId,
                     mediaId);
 
             if (!resultado.Exitoso)
@@ -120,6 +131,7 @@ namespace ExploraCostaRica.Controllers
         {
             var resultado =
                 await _favoritosService.QuitarAsync(
+                    UserId,
                     mediaId);
 
             if (!resultado.Exitoso)
@@ -150,6 +162,7 @@ namespace ExploraCostaRica.Controllers
         {
             var resultado =
                 await _favoritosService.ToggleAsync(
+                    UserId,
                     mediaId);
 
             if (!resultado.Exitoso)

@@ -1,0 +1,106 @@
+﻿@model List<ExploraCostaRica.Models.DTOs.MediaItemDto>
+
+@{
+    ViewData["Title"] = "Cultura de Costa Rica";
+    string busqueda = ViewBag.Busqueda ?? "";
+    string? error = ViewBag.Error;
+}
+
+<div class="container py-5">
+
+    <div class="text-center mb-5">
+        <h1 class="fw-bold">Cultura de Costa Rica</h1>
+        <p class="text-muted">
+            Imágenes culturales e históricas de Wikimedia Commons,
+            con su autor y licencia.
+        </p>
+    </div>
+
+    <form asp-controller="Cultura"
+          asp-action="Index"
+          method="get"
+          class="row justify-content-center mb-5">
+
+        <div class="col-md-8">
+            <div class="input-group input-group-lg">
+                <input type="text"
+                       name="busqueda"
+                       value="@busqueda"
+                       maxlength="120"
+                       class="form-control"
+                       placeholder="Ejemplo: carreta típica, Teatro Nacional" />
+
+                <button class="btn btn-success" type="submit">
+                    Buscar
+                </button>
+            </div>
+        </div>
+    </form>
+
+    @if (!string.IsNullOrWhiteSpace(error))
+    {
+        <div class="alert alert-danger">
+            @error
+        </div>
+    }
+
+    @if (Model.Count > 0)
+    {
+        <h3 class="mb-4">
+            Resultados para: @busqueda
+        </h3>
+
+        <div class="row g-4">
+            @foreach (var item in Model)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 shadow-sm border-0">
+
+                        <a href="@item.Url"
+                           target="_blank"
+                           rel="noopener noreferrer">
+                            <img src="@item.ImageUrl"
+                                 class="card-img-top"
+                                 alt="@item.Title"
+                                 loading="lazy"
+                                 style="height:240px; object-fit:cover;" />
+                        </a>
+
+                        <div class="card-body">
+                            <span class="badge bg-success mb-2">Cultura</span>
+
+                            <h5 class="card-title">@item.Title</h5>
+
+                            @if (!string.IsNullOrWhiteSpace(item.Description))
+                            {
+                                <p class="small text-muted mb-2">
+                                    @item.Description
+                                </p>
+                            }
+
+                            <p class="small mb-0">
+                                @if (!string.IsNullOrWhiteSpace(item.Author))
+                                {
+                                    <span>Autor: @item.Author.</span>
+                                }
+                                <a href="@item.Url"
+                                   target="_blank"
+                                   rel="noopener noreferrer">
+                                    Ver en Wikimedia Commons
+                                </a>
+                            </p>
+                        </div>
+
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else if (string.IsNullOrWhiteSpace(error))
+    {
+        <div class="alert alert-info text-center">
+            No encontramos imágenes para esa búsqueda.
+        </div>
+    }
+
+</div>

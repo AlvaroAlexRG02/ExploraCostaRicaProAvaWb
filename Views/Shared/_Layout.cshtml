@@ -36,6 +36,12 @@
           asp-append-version="true" />
 
 
+    <!-- Zona de sesión (usuario / cerrar sesión) -->
+    <link rel="stylesheet"
+          href="~/css/account.css"
+          asp-append-version="true" />
+
+
     <style>
 
         /* ====================================================
@@ -471,15 +477,36 @@
                         </a>
 
 
-                        <!-- LOGIN
-                             Lo conectaremos después -->
+                        <!-- SESIÓN -->
 
-                        <a href="#"
-                           class="login-button">
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <span class="user-chip" title="@User.Identity.Name">
+                                👤 <span>@User.Identity.Name</span>
+                            </span>
 
-                            👤 Iniciar sesión
+                            <form asp-controller="Account"
+                                  asp-action="Logout"
+                                  method="post"
+                                  class="m-0">
 
-                        </a>
+                                <button type="submit"
+                                        class="logout-button">
+                                    Cerrar sesión
+                                </button>
+
+                            </form>
+                        }
+                        else
+                        {
+                            <a asp-controller="Account"
+                               asp-action="Login"
+                               class="login-button">
+
+                                👤 Iniciar sesión
+
+                            </a>
+                        }
 
 
                     </div>

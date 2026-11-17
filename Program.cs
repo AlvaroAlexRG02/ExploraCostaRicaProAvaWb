@@ -1,5 +1,6 @@
 ﻿using ExploraCostaRica.Data;
 using ExploraCostaRica.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -46,12 +47,54 @@ builder.Services.AddScoped<IDestinationService, DestinationService>();
 // Agrega, elimina, consulta y administra los favoritos del usuario.
 builder.Services.AddScoped<IFavoritosService, FavoritosService>();
 
+
+builder.Services.AddScoped<IAuthService, AuthService>();
+
 // Servicios del Dashboard (formato JSON común v1.0)
 // Dashboard: consulta, importa y exporta Sources / SourceItems.
 builder.Services.AddScoped<IDashboardService, DashboardService>();
 
 // Sincronizar: convierte GNews, Unsplash e iNaturalist al formato común.
 builder.Services.AddScoped<IDashboardSyncService, DashboardSyncService>();
+
+
+// ============================================================
+// AUTENTICACIÓN POR COOKIE (tabla Users)
+// ============================================================
+
+builder.Services
+    .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Account/Login";
+        options.AccessDeniedPath = "/Account/AccessDenied";
+        options.Cookie.Name = "ExploraCostaRica.Auth";
+        options.Cookie.HttpOnly = true;
+        options.Cookie.SameSite = SameSiteMode.Lax;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+        options.ExpireTimeSpan = TimeSpan.FromHours(8);
+        options.SlidingExpiration = true;
+
+
+        options.Events.OnRedirectToLogin = context =>
+        {
+            var ruta = context.Request.Path;
+
+            bool esAjax =
+                ruta.StartsWithSegments("/Favoritos/Ids") ||
+                (HttpMethods.IsPost(context.Request.Method) &&
+                 ruta.StartsWithSegments("/Favoritos"));
+
+            if (esAjax)
+            {
+                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                return Task.CompletedTask;
+            }
+
+            context.Response.Redirect(context.RedirectUri);
+            return Task.CompletedTask;
+        };
+    });
 
 
 // ============================================================
@@ -95,6 +138,22 @@ builder.Services.AddHttpClient<IBiodiversidadApiService, BiodiversidadApiService
 
         client.DefaultRequestHeaders.UserAgent.ParseAdd(
             "ExploraCostaRica/1.0"
+        );
+    }
+);
+
+
+// ============================================================
+// API EXTERNA: WIKIMEDIA COMMONS (CULTURA)
+// ============================================================
+
+builder.Services.AddHttpClient<IWikimediaApiService, WikimediaApiService>(
+    client =>
+    {
+        client.Timeout = TimeSpan.FromSeconds(20);
+
+        client.DefaultRequestHeaders.UserAgent.ParseAdd(
+            "ExploraCostaRica/1.0 (proyecto academico SC-701)"
         );
     }
 );
@@ -146,8 +205,11 @@ app.UseRouting();
 
 
 // ============================================================
-// AUTORIZACIÓN
+// AUTENTICACIÓN Y AUTORIZACIÓN
+// (Authentication siempre antes de Authorization)
 // ============================================================
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 

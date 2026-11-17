@@ -17,6 +17,12 @@
             },
             body: body.toString()
         }).then(function (r) {
+            if (r.status === 401) {
+
+                window.location.href = "/Account/Login?returnUrl=" +
+                    encodeURIComponent(window.location.pathname + window.location.search);
+                throw new Error("HTTP 401");
+            }
             if (!r.ok) throw new Error("HTTP " + r.status);
             return r.json();
         });
@@ -47,7 +53,10 @@
 
         post("Toggle", mediaId)
             .then(function (res) { applyState(mediaId, res.isFavorite); })
-            .catch(function () { alert("No se pudo actualizar el favorito. Intenta de nuevo."); })
+            .catch(function (e) {
+                if (e && e.message === "HTTP 401") return;
+                alert("No se pudo actualizar el favorito. Intenta de nuevo.");
+            })
             .finally(function () { btn.dataset.busy = "0"; });
     };
 
@@ -67,8 +76,9 @@
                     updateCountAndEmpty(res.count);
                 }, 300);
             })
-            .catch(function () {
+            .catch(function (e) {
                 card.dataset.busy = "0";
+                if (e && e.message === "HTTP 401") return;
                 alert("No se pudo quitar el favorito. Intenta de nuevo.");
             });
     };

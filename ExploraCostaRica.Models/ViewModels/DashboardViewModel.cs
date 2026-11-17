@@ -1,4 +1,4 @@
-﻿namespace ExploraCostaRica.Models.ViewModels
+﻿namespace ExploraCostaRica.Models.ViewModels{
 
     public class DashboardFilter
     {

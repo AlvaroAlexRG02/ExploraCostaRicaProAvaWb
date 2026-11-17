@@ -1,3 +1,4 @@
+using ExploraCostaRica.Models.DTOs;
 using ExploraCostaRica.Models.Entities;
 
 namespace ExploraCostaRica.Models.ViewModels
@@ -11,7 +12,7 @@ namespace ExploraCostaRica.Models.ViewModels
     public class ExplorarFiltro
     {
         public string? Texto { get; set; }      // lo que escribe en el buscador
-        public string? Tipo { get; set; }       // Foto, Video, Noticia...
+        public string? Tipo { get; set; }       // Foto, Video, Biodiversidad...
         public int? CategoriaId { get; set; }   // Naturaleza, Cultura...
         public int? DestinoId { get; set; }     // Monteverde, Arenal...
         public int? FuenteId { get; set; }      // de qué API / fuente vino
@@ -38,8 +39,19 @@ namespace ExploraCostaRica.Models.ViewModels
         // Los filtros que el usuario eligió (para dejarlos marcados)
         public ExplorarFiltro Filtro { get; set; } = new();
 
-        // Las tarjetas que se van a mostrar
+        // Tarjetas que vienen de nuestra base de datos (SQL Server)
         public List<VwMediaCatalog> Resultados { get; set; } = new();
+
+        // Tarjetas que vienen de APIs externas en vivo
+        // (YouTube - API 4 y GBIF - API 10), ya en el formato común.
+        public List<MediaItemDto> ResultadosExternos { get; set; } = new();
+
+        // Mensajes amigables si alguna API externa falló.
+        // Ej.: "No fue posible consultar YouTube en este momento."
+        public List<string> Avisos { get; set; } = new();
+
+        // true si en esta búsqueda se consultaron APIs externas
+        public bool SeConsultaronApis { get; set; }
 
         // Opciones para llenar los filtros del panel izquierdo
         public List<OpcionFiltro> Tipos { get; set; } = new();
@@ -47,6 +59,7 @@ namespace ExploraCostaRica.Models.ViewModels
         public List<OpcionFiltro> Destinos { get; set; } = new();
         public List<OpcionFiltro> Fuentes { get; set; } = new();
 
-        public int TotalResultados => Resultados.Count;
+        // Total = contenido local + contenido de APIs externas
+        public int TotalResultados => Resultados.Count + ResultadosExternos.Count;
     }
 }

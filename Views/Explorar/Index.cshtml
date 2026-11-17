@@ -14,6 +14,8 @@
         "libro" or "libros" => "📖",
         "paper" or "papers" => "📄",
         "cultura" => "🏛️",
+        "biodiversidad" => "🦜",
+        "clima" => "⛅",
         "lugar" or "destino" => "📍",
         _ => "✨"
     };
@@ -30,193 +32,291 @@
    /Explorar?Texto=Monteverde&CategoriaId=2&Orden=recientes
    ========================================================== *@
 <div class="explorar-page">
-<form method="get" asp-controller="Explorar" asp-action="Index" id="explorarForm">
 
-    <!-- ===================== ENCABEZADO ===================== -->
-    <section class="explorar-hero">
-        <h1>Explorar contenido</h1>
-        <p>Descubre fotos, videos, noticias, libros, investigaciones y más sobre la naturaleza, cultura y riqueza de Costa Rica.</p>
-
-        <div class="explorar-search">
-            <span class="explorar-search-icon">🔍</span>
-            <input type="text" name="Texto" value="@f.Texto"
-                   placeholder="Buscar contenido (lugares, especies, temas, autores...)" />
-            <button type="submit">Buscar</button>
+    @* Aviso de carga: se muestra mientras se consultan las APIs externas *@
+    <div id="explorar-cargando" class="explorar-cargando" hidden>
+        <div class="explorar-cargando-caja">
+            <div class="spinner-border text-success" role="status"></div>
+            <p>Buscando en nuestro catálogo, YouTube y GBIF…</p>
         </div>
+    </div>
 
-        <!-- Pastillas rápidas por tipo (son links que conservan la búsqueda) -->
-        <div class="explorar-pills">
-            <a class="explorar-pill @(string.IsNullOrEmpty(f.Tipo) ? "active" : "")"
-               asp-action="Index" asp-route-Texto="@f.Texto">✨ Todos</a>
+    <form method="get" asp-controller="Explorar" asp-action="Index" id="explorarForm">
 
-            @foreach (var t in Model.Tipos)
-            {
-                <a class="explorar-pill @(f.Tipo == t.Valor ? "active" : "")"
-                   asp-action="Index" asp-route-Texto="@f.Texto" asp-route-Tipo="@t.Valor">
-                    @Icono(t.Valor) @t.Texto
-                </a>
-            }
-        </div>
-    </section>
+        <!-- ===================== ENCABEZADO ===================== -->
+        <section class="explorar-hero">
+            <h1>Explorar contenido</h1>
+            <p>Descubre fotos, videos, noticias, libros, investigaciones y más sobre la naturaleza, cultura y riqueza de Costa Rica.</p>
 
-    <div class="explorar-layout">
+            <div class="explorar-search">
+                <span class="explorar-search-icon">🔍</span>
+                <input type="text" name="Texto" value="@f.Texto"
+                       placeholder="Buscar contenido (lugares, especies, temas, autores...)" />
+                <button type="submit">Buscar</button>
+            </div>
 
-        <!-- ===================== FILTROS (izquierda) ===================== -->
-        <aside class="explorar-filtros">
-            <h5>⏷ Filtros</h5>
-
-            <div class="filtro-grupo">
-                <label class="filtro-titulo">Tipo de contenido</label>
-
-                <label class="filtro-opcion">
-                    <input type="radio" name="Tipo" value="" @(string.IsNullOrEmpty(f.Tipo) ? "checked" : "") />
-                    <span>Todos</span>
-                </label>
+            <!-- Pastillas rápidas por tipo (son links que conservan la búsqueda) -->
+            <div class="explorar-pills">
+                <a class="explorar-pill @(string.IsNullOrEmpty(f.Tipo) ? "active" : "")"
+                   asp-action="Index" asp-route-Texto="@f.Texto">✨ Todos</a>
 
                 @foreach (var t in Model.Tipos)
                 {
-                    <label class="filtro-opcion">
-                        <input type="radio" name="Tipo" value="@t.Valor" @(f.Tipo == t.Valor ? "checked" : "") />
-                        <span>@t.Texto</span>
-                        <small>(@t.Cantidad)</small>
-                    </label>
+                    <a class="explorar-pill @(f.Tipo == t.Valor ? "active" : "")"
+                       asp-action="Index" asp-route-Texto="@f.Texto" asp-route-Tipo="@t.Valor">
+                        @Icono(t.Valor) @t.Texto
+                    </a>
                 }
             </div>
+        </section>
 
-            <div class="filtro-grupo">
-                <label class="filtro-titulo" for="CategoriaId">Tema / Categoría</label>
-                <select name="CategoriaId" id="CategoriaId" class="form-select form-select-sm">
-                    <option value="">Todas las categorías</option>
-                    @foreach (var c in Model.Categorias)
+        <div class="explorar-layout">
+
+            <!-- ===================== FILTROS (izquierda) ===================== -->
+            <aside class="explorar-filtros">
+                <h5>⏷ Filtros</h5>
+
+                <div class="filtro-grupo">
+                    <label class="filtro-titulo">Tipo de contenido</label>
+
+                    <label class="filtro-opcion">
+                        <input type="radio" name="Tipo" value="" @(string.IsNullOrEmpty(f.Tipo) ? "checked" : "") />
+                        <span>Todos</span>
+                    </label>
+
+                    @foreach (var t in Model.Tipos)
                     {
-                        <option value="@c.Valor" selected="@(f.CategoriaId?.ToString() == c.Valor)">@c.Texto (@c.Cantidad)</option>
-                    }
-                </select>
-            </div>
-
-            <div class="filtro-grupo">
-                <label class="filtro-titulo" for="DestinoId">Destino</label>
-                <select name="DestinoId" id="DestinoId" class="form-select form-select-sm">
-                    <option value="">Todos los destinos</option>
-                    @foreach (var d in Model.Destinos)
-                    {
-                        <option value="@d.Valor" selected="@(f.DestinoId?.ToString() == d.Valor)">@d.Texto (@d.Cantidad)</option>
-                    }
-                </select>
-            </div>
-
-            <div class="filtro-grupo">
-                <label class="filtro-titulo" for="FuenteId">Autor o fuente</label>
-                <select name="FuenteId" id="FuenteId" class="form-select form-select-sm">
-                    <option value="">Todas las fuentes</option>
-                    @foreach (var s in Model.Fuentes)
-                    {
-                        <option value="@s.Valor" selected="@(f.FuenteId?.ToString() == s.Valor)">@s.Texto (@s.Cantidad)</option>
-                    }
-                </select>
-            </div>
-
-            <button type="submit" class="btn-aplicar">Aplicar filtros</button>
-            <a asp-action="Index" class="btn-limpiar">Limpiar filtros</a>
-        </aside>
-
-        <!-- ===================== RESULTADOS (derecha) ===================== -->
-        <section class="explorar-resultados">
-
-            <div class="resultados-barra">
-                <div>
-                    <strong>@Model.TotalResultados resultados</strong>
-                    @if (!string.IsNullOrWhiteSpace(f.Texto))
-                    {
-                        <span class="text-muted"> para “@f.Texto”</span>
+                        <label class="filtro-opcion">
+                            <input type="radio" name="Tipo" value="@t.Valor" @(f.Tipo == t.Valor ? "checked" : "") />
+                            <span>@t.Texto</span>
+                            <small>(@t.Cantidad)</small>
+                        </label>
                     }
                 </div>
 
-                <div class="d-flex align-items-center gap-2">
-                    <label for="Orden" class="text-muted small mb-0">Ordenar por:</label>
-                    @* onchange: al cambiar el orden se envía el formulario solo *@
-                    <select name="Orden" id="Orden" class="form-select form-select-sm w-auto"
-                            onchange="this.form.submit()">
-                        <option value="relevantes" selected="@(f.Orden == "relevantes")">Más relevantes</option>
-                        <option value="recientes" selected="@(f.Orden == "recientes")">Más recientes</option>
-                        <option value="titulo" selected="@(f.Orden == "titulo")">Título (A-Z)</option>
+                <div class="filtro-grupo">
+                    <label class="filtro-titulo" for="CategoriaId">Tema / Categoría</label>
+                    <select name="CategoriaId" id="CategoriaId" class="form-select form-select-sm">
+                        <option value="">Todas las categorías</option>
+                        @foreach (var c in Model.Categorias)
+                        {
+                            <option value="@c.Valor" selected="@(f.CategoriaId?.ToString() == c.Valor)">@c.Texto (@c.Cantidad)</option>
+                        }
                     </select>
                 </div>
-            </div>
 
-            @if (!Model.Resultados.Any())
-            {
-                <!-- Estado "sin resultados" -->
-                <div class="sin-resultados">
-                    <div class="sin-resultados-icono">🔎</div>
-                    <h4>No encontramos resultados</h4>
-                    <p>Probá con otra palabra o quitá algunos filtros.</p>
-                    <a asp-action="Index" class="btn-aplicar btn-ver-todo">Ver todo el contenido</a>
+                <div class="filtro-grupo">
+                    <label class="filtro-titulo" for="DestinoId">Destino</label>
+                    <select name="DestinoId" id="DestinoId" class="form-select form-select-sm">
+                        <option value="">Todos los destinos</option>
+                        @foreach (var d in Model.Destinos)
+                        {
+                            <option value="@d.Valor" selected="@(f.DestinoId?.ToString() == d.Valor)">@d.Texto (@d.Cantidad)</option>
+                        }
+                    </select>
                 </div>
-            }
-            else
-            {
-                <div class="explorar-grid">
-                    @foreach (var item in Model.Resultados)
-                    {
-                        <article class="explorar-card">
 
-                            <div class="explorar-card-img">
-                                @if (!string.IsNullOrWhiteSpace(item.ImageUrl))
-                                {
-                                    <img src="@item.ImageUrl" alt="@item.Title" loading="lazy" />
-                                }
-                                else
-                                {
+                <div class="filtro-grupo">
+                    <label class="filtro-titulo" for="FuenteId">Autor o fuente</label>
+                    <select name="FuenteId" id="FuenteId" class="form-select form-select-sm">
+                        <option value="">Todas las fuentes</option>
+                        @foreach (var s in Model.Fuentes)
+                        {
+                            <option value="@s.Valor" selected="@(f.FuenteId?.ToString() == s.Valor)">@s.Texto (@s.Cantidad)</option>
+                        }
+                    </select>
+                </div>
+
+                <button type="submit" class="btn-aplicar">Aplicar filtros</button>
+                <a asp-action="Index" class="btn-limpiar">Limpiar filtros</a>
+            </aside>
+
+            <!-- ===================== RESULTADOS (derecha) ===================== -->
+            <section class="explorar-resultados">
+
+                <div class="resultados-barra">
+                    <div>
+                        <strong>@Model.TotalResultados resultados</strong>
+                        @if (!string.IsNullOrWhiteSpace(f.Texto))
+                        {
+                            <span class="text-muted"> para “@f.Texto”</span>
+                        }
+                    </div>
+
+                    <div class="d-flex align-items-center gap-2">
+                        <label for="Orden" class="text-muted small mb-0">Ordenar por:</label>
+                        @* onchange: al cambiar el orden se envía el formulario solo *@
+                        <select name="Orden" id="Orden" class="form-select form-select-sm w-auto"
+                                onchange="this.form.submit()">
+                            <option value="relevantes" selected="@(f.Orden == "relevantes")">Más relevantes</option>
+                            <option value="recientes" selected="@(f.Orden == "recientes")">Más recientes</option>
+                            <option value="titulo" selected="@(f.Orden == "titulo")">Título (A-Z)</option>
+                        </select>
+                    </div>
+                </div>
+
+                @* ---------- Avisos si alguna API externa falló ---------- *@
+                @foreach (var aviso in Model.Avisos)
+                {
+                    <div class="aviso-api">⚠️ @aviso Mostramos el resto del contenido.</div>
+                }
+
+                @* ---------- Sugerencia cuando no hay texto de búsqueda ---------- *@
+                @if (string.IsNullOrWhiteSpace(f.Texto))
+                {
+                    <div class="pista-apis">
+                        💡 Escribí algo en el buscador (ej.: <em>Monteverde</em>, <em>quetzal</em>, <em>Arenal</em>)
+                        para ver también <strong>videos de YouTube</strong> y
+                        <strong>registros científicos de GBIF</strong>.
+                    </div>
+                }
+
+                @if (Model.TotalResultados == 0)
+                {
+                    <!-- Estado "sin resultados" -->
+                    <div class="sin-resultados">
+                        <div class="sin-resultados-icono">🔎</div>
+                        <h4>No encontramos resultados</h4>
+                        <p>Probá con otra palabra o quitá algunos filtros.</p>
+                        <a asp-action="Index" class="btn-aplicar btn-ver-todo">Ver todo el contenido</a>
+                    </div>
+                }
+                else
+                {
+                    <div class="explorar-grid">
+
+                        @* ===== 1. CONTENIDO DE NUESTRA BASE DE DATOS ===== *@
+                        @foreach (var item in Model.Resultados)
+                        {
+                            <article class="explorar-card">
+
+                                <div class="explorar-card-img">
+                                    @* El ícono queda detrás: si la imagen falla (onerror), se ve el ícono *@
                                     <div class="img-placeholder">@Icono(item.ContentType)</div>
-                                }
-                                <span class="tipo-badge">@Icono(item.ContentType) @item.ContentType</span>
-                            </div>
-
-                            <div class="explorar-card-body">
-                                <h6>@item.Title</h6>
-                                <p class="descripcion">@item.Description</p>
-
-                                <div class="meta">
-                                    @if (!string.IsNullOrWhiteSpace(item.Destination))
+                                    @if (!string.IsNullOrWhiteSpace(item.ImageUrl))
                                     {
-                                        <span>📍 @item.Destination@(string.IsNullOrWhiteSpace(item.Province) ? "" : ", " + item.Province)</span>
+                                        <img src="@item.ImageUrl" alt="@item.Title" loading="lazy" onerror="this.remove()" />
                                     }
-                                    <span>🛡️ @item.Source</span>
+                                    <span class="tipo-badge">@Icono(item.ContentType) @item.ContentType</span>
                                 </div>
 
-                                <div class="etiquetas">
-                                    @if (!string.IsNullOrWhiteSpace(item.Category))
+                                <div class="explorar-card-body">
+                                    <h6>@item.Title</h6>
+                                    <p class="descripcion">@item.Description</p>
+
+                                    <div class="meta">
+                                        @if (!string.IsNullOrWhiteSpace(item.Destination))
+                                        {
+                                            <span>📍 @item.Destination@(string.IsNullOrWhiteSpace(item.Province) ? "" : ", " + item.Province)</span>
+                                        }
+                                        <span>🛡️ @item.Source</span>
+                                    </div>
+
+                                    <div class="etiquetas">
+                                        @if (!string.IsNullOrWhiteSpace(item.Category))
+                                        {
+                                            <span class="etiqueta">@item.Category</span>
+                                        }
+                                        @if (!string.IsNullOrWhiteSpace(item.Author))
+                                        {
+                                            <span class="etiqueta">@item.Author</span>
+                                        }
+                                    </div>
+
+                                    <div class="acciones">
+                                        @* Reutiliza el favorito de Jefry: misma clase y misma función JS *@
+                                        <button type="button" class="btn-favorite"
+                                                data-media-id="@item.MediaId"
+                                                onclick="toggleFavorite(this)">
+                                            ♡ Favorito
+                                        </button>
+
+                                        @if (!string.IsNullOrWhiteSpace(item.Url))
+                                        {
+                                            <a href="@item.Url" target="_blank" rel="noopener" class="btn-ver">Ver fuente ↗</a>
+                                        }
+                                    </div>
+                                </div>
+                            </article>
+                        }
+
+                        @* ===== 2. CONTENIDO EN VIVO: YOUTUBE (API 4) Y GBIF (API 10) =====
+                       Vienen como MediaItemDto: la vista no conoce el JSON propio
+                       de cada API, solo el formato común. *@
+                        @foreach (var ext in Model.ResultadosExternos)
+                        {
+                            bool esVideo = ext.ContentType == "Video";
+
+                            <article class="explorar-card explorar-card-externa">
+
+                                <div class="explorar-card-img @(esVideo ? "es-video" : "")">
+                                    <div class="img-placeholder">@Icono(ext.ContentType)</div>
+                                    @if (!string.IsNullOrWhiteSpace(ext.ImageUrl))
                                     {
-                                        <span class="etiqueta">@item.Category</span>
+                                        <img src="@ext.ImageUrl" alt="@ext.Title" loading="lazy"
+                                             referrerpolicy="no-referrer" onerror="this.remove()" />
                                     }
-                                    @if (!string.IsNullOrWhiteSpace(item.Author))
+                                    @if (esVideo)
                                     {
-                                        <span class="etiqueta">@item.Author</span>
+                                        <span class="play-overlay" aria-hidden="true">▶</span>
                                     }
+                                    <span class="tipo-badge">@Icono(ext.ContentType) @ext.ContentType</span>
+                                    <span class="fuente-badge">En vivo · @ext.Source</span>
                                 </div>
 
-                                <div class="acciones">
-                                    @* Reutiliza el favorito de Jefry: misma clase y misma función JS *@
-                                    <button type="button" class="btn-favorite"
-                                            data-media-id="@item.MediaId"
-                                            onclick="toggleFavorite(this)">♡ Favorito</button>
+                                <div class="explorar-card-body">
+                                    <h6>@ext.Title</h6>
+                                    <p class="descripcion">@ext.Description</p>
 
-                                    @if (!string.IsNullOrWhiteSpace(item.Url))
+                                    <div class="meta">
+                                        @if (!string.IsNullOrWhiteSpace(ext.Destination))
+                                        {
+                                            <span>📍 @ext.Destination</span>
+                                        }
+                                        @if (ext.PublishedAt.HasValue)
+                                        {
+                                            <span>📅 @ext.PublishedAt.Value.ToString("dd/MM/yyyy")</span>
+                                        }
+                                    </div>
+
+                                    @* Atribución: autor/canal y licencia, como piden YouTube y GBIF *@
+                                    @if (!string.IsNullOrWhiteSpace(ext.Author))
                                     {
-                                        <a href="@item.Url" target="_blank" rel="noopener" class="btn-ver">Ver fuente ↗</a>
+                                        <p class="atribucion">
+                                            @(esVideo ? "Canal" : "Registro"): @ext.Author
+                                        </p>
                                     }
+
+                                    <div class="acciones">
+                                        <span class="etiqueta">@ext.Category</span>
+
+                                        @if (!string.IsNullOrWhiteSpace(ext.Url))
+                                        {
+                                            <a href="@ext.Url" target="_blank" rel="noopener" class="btn-ver">
+                                                Ver en @ext.Source ↗
+                                            </a>
+                                        }
+                                    </div>
                                 </div>
-                            </div>
-                        </article>
-                    }
-                </div>
-            }
-        </section>
-    </div>
-</form>
+                            </article>
+                        }
+                    </div>
+                }
+            </section>
+        </div>
+    </form>
 </div>
 
 @section Scripts {
     <script src="~/js/favoritos.js" asp-append-version="true"></script>
+    <script>
+        // Al enviar la búsqueda con texto, mostramos el aviso de carga,
+        // porque consultar YouTube y GBIF puede tardar unos segundos.
+        document.getElementById("explorarForm").addEventListener("submit", function() {
+            const texto = this.querySelector("input[name='Texto']").value.trim();
+            if (texto.length > 0) {
+                document.getElementById("explorar-cargando").hidden = false;
+            }
+        });
+    </script>
 }

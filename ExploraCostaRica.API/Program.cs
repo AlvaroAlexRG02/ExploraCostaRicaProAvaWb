@@ -115,6 +115,26 @@ builder.Services.AddHttpClient<
 
 
 // ============================================================
+// API 10 - GBIF (BIODIVERSIDAD CIENTÍFICA)
+// ============================================================
+
+// No requiere API Key. Usa la misma caché en memoria (AddMemoryCache)
+// que iNaturalist para no repetir búsquedas.
+builder.Services.AddHttpClient<
+    IGbifApiService,
+    GbifApiService>(
+    client =>
+    {
+        client.Timeout = TimeSpan.FromSeconds(20);
+
+        client.DefaultRequestHeaders.UserAgent.ParseAdd(
+            "ExploraCostaRica/1.0 (proyecto academico SC-701)"
+        );
+    }
+);
+
+
+// ============================================================
 // CREAR APLICACIÓN
 // ============================================================
 

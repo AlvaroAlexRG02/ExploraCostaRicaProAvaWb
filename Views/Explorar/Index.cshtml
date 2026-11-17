@@ -19,6 +19,10 @@
         "lugar" or "destino" => "📍",
         _ => "✨"
     };
+
+    // Nombre del tipo sin espacios ni mayúsculas para usarlo como clase CSS.
+    // Ej.: "Biodiversidad" -> "tipo-biodiversidad" (cada tipo tiene su color).
+    string Slug(string? tipo) => (tipo ?? "otro").Trim().ToLowerInvariant().Replace(" ", "-");
 }
 
 <link rel="stylesheet" href="~/css/explorar.css" asp-append-version="true" />
@@ -45,6 +49,7 @@
 
         <!-- ===================== ENCABEZADO ===================== -->
         <section class="explorar-hero">
+            <span class="explorar-hero-eyebrow">🌿 Catálogo + YouTube + GBIF</span>
             <h1>Explorar contenido</h1>
             <p>Descubre fotos, videos, noticias, libros, investigaciones y más sobre la naturaleza, cultura y riqueza de Costa Rica.</p>
 
@@ -190,14 +195,21 @@
                         {
                             <article class="explorar-card">
 
-                                <div class="explorar-card-img">
-                                    @* El ícono queda detrás: si la imagen falla (onerror), se ve el ícono *@
+                                <div class="explorar-card-img fondo-@Slug(item.ContentType)">
+                                    @* El ícono queda detrás: si la imagen falla (onerror), se ve el fondo de color *@
                                     <div class="img-placeholder">@Icono(item.ContentType)</div>
                                     @if (!string.IsNullOrWhiteSpace(item.ImageUrl))
                                     {
-                                        <img src="@item.ImageUrl" alt="@item.Title" loading="lazy" onerror="this.remove()" />
+                                        <img src="@item.ImageUrl" alt="@item.Title" loading="lazy"
+                                             referrerpolicy="no-referrer" onerror="this.remove()" />
                                     }
-                                    <span class="tipo-badge">@Icono(item.ContentType) @item.ContentType</span>
+                                    <span class="tipo-badge tipo-@Slug(item.ContentType)">@Icono(item.ContentType) @item.ContentType</span>
+
+                                    @* Crédito de la foto de respaldo (Unsplash / Wikimedia) *@
+                                    @if (Model.CreditosImagen.TryGetValue(item.MediaId, out var credito))
+                                    {
+                                        <span class="credito-foto" title="@credito">@credito</span>
+                                    }
                                 </div>
 
                                 <div class="explorar-card-body">
@@ -249,7 +261,7 @@
 
                             <article class="explorar-card explorar-card-externa">
 
-                                <div class="explorar-card-img @(esVideo ? "es-video" : "")">
+                                <div class="explorar-card-img fondo-@Slug(ext.ContentType) @(esVideo ? "es-video" : "")">
                                     <div class="img-placeholder">@Icono(ext.ContentType)</div>
                                     @if (!string.IsNullOrWhiteSpace(ext.ImageUrl))
                                     {
@@ -260,7 +272,7 @@
                                     {
                                         <span class="play-overlay" aria-hidden="true">▶</span>
                                     }
-                                    <span class="tipo-badge">@Icono(ext.ContentType) @ext.ContentType</span>
+                                    <span class="tipo-badge tipo-@Slug(ext.ContentType)">@Icono(ext.ContentType) @ext.ContentType</span>
                                     <span class="fuente-badge">En vivo · @ext.Source</span>
                                 </div>
 

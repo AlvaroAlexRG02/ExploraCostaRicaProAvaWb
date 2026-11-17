@@ -53,6 +53,11 @@ namespace ExploraCostaRica.Models.ViewModels
         // true si en esta búsqueda se consultaron APIs externas
         public bool SeConsultaronApis { get; set; }
 
+        // Crédito de la foto de respaldo de cada tarjeta local.
+        // Clave = MediaId, Valor = "Foto: autor · licencia · fuente".
+        // Se muestra pequeño en la tarjeta (atribución).
+        public Dictionary<long, string> CreditosImagen { get; set; } = new();
+
         // Opciones para llenar los filtros del panel izquierdo
         public List<OpcionFiltro> Tipos { get; set; } = new();
         public List<OpcionFiltro> Categorias { get; set; } = new();

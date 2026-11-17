@@ -3,6 +3,7 @@ using ExploraCostaRica.Models.DTOs;
 using ExploraCostaRica.Models.Entities;
 using ExploraCostaRica.Models.ViewModels;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace ExploraCostaRica.Services
 {
@@ -35,19 +36,42 @@ namespace ExploraCostaRica.Services
         // Cuántos resultados pedir a cada API externa
         private const int CantidadPorApi = 8;
 
+        // Fotos de respaldo: las encontradas en Wikimedia se guardan
+        // 1 día, así cada destino se busca una sola vez al día.
+        private static readonly TimeSpan DuracionCacheFotos = TimeSpan.FromDays(1);
+
+        // Tiempo máximo para esperar una foto de respaldo. Si tarda
+        // más, la tarjeta usa el fondo de color y la página no espera.
+        private static readonly TimeSpan EsperaMaximaFoto = TimeSpan.FromSeconds(4);
+
+        // Fotos locales (wwwroot/images/home) que ya usa Inicio.
+        // Clave = palabra del destino; valor = ruta de la imagen.
+        private static readonly Dictionary<string, string> FotosLocales = new()
+        {
+            ["arenal"] = "/images/home/arenalunsplash.jpg",
+            ["monteverde"] = "/images/home/monteverdeunsplash.jpg",
+            ["guanacaste"] = "/images/home/guanacasteunsplash.jpg"
+        };
+
         private readonly ExploraCostaRicaDbContext _context;
         private readonly IYouTubeApiService _youTubeService;
         private readonly IGbifApiService _gbifService;
+        private readonly IWikimediaApiService _wikimediaService;
+        private readonly IMemoryCache _cache;
 
         // Todo llega por inyección de dependencias (Program.cs)
         public ExplorarService(
             ExploraCostaRicaDbContext context,
             IYouTubeApiService youTubeService,
-            IGbifApiService gbifService)
+            IGbifApiService gbifService,
+            IWikimediaApiService wikimediaService,
+            IMemoryCache cache)
         {
             _context = context;
             _youTubeService = youTubeService;
             _gbifService = gbifService;
+            _wikimediaService = wikimediaService;
+            _cache = cache;
         }
 
         public async Task<ExplorarViewModel> BuscarAsync(ExplorarFiltro filtro, int? userId)
@@ -84,6 +108,9 @@ namespace ExploraCostaRica.Services
                 query = query.Where(m => m.SourceId == filtro.FuenteId);
 
             modelo.Resultados = await Ordenar(query, filtro.Orden).ToListAsync();
+
+            // Fotos de respaldo para el contenido que no trae imagen
+            await AsignarFotosDeRespaldoAsync(modelo);
 
             // ----------------------------------------------------
             // 2. CONTENIDO EXTERNO (YouTube + GBIF)
@@ -218,6 +245,133 @@ namespace ExploraCostaRica.Services
                 "titulo" => lista.OrderBy(m => m.Title).ToList(),
                 _ => lista   // relevantes: el orden que da cada API
             };
+        }
+
+        // ------------------------------------------------------------
+        // FOTOS DE RESPALDO PARA EL CONTENIDO LOCAL
+        // Muchos registros de la base no traen ImageUrl. Para que
+        // ninguna tarjeta quede sin foto se sigue este orden:
+        //   1. La imagen propia del contenido (si tiene).
+        //   2. Una foto local del destino (las mismas de Inicio).
+        //   3. Una foto del destino en Wikimedia Commons (sin API Key),
+        //      guardada en caché 1 día y con crédito de autor/licencia.
+        //   4. Si nada funciona, la vista muestra un fondo de color.
+        // ------------------------------------------------------------
+        private async Task AsignarFotosDeRespaldoAsync(ExplorarViewModel modelo)
+        {
+            var sinFoto = modelo.Resultados
+                .Where(r => string.IsNullOrWhiteSpace(r.ImageUrl))
+                .ToList();
+
+            if (sinFoto.Count == 0)
+            {
+                return;
+            }
+
+            // Paso 2: foto local según el destino
+            foreach (var item in sinFoto)
+            {
+                string? local = BuscarFotoLocal(item.Destination);
+
+                if (local != null)
+                {
+                    item.ImageUrl = local;
+                    modelo.CreditosImagen[item.MediaId] = "Foto: Unsplash";
+                }
+            }
+
+            // Paso 3: Wikimedia, una búsqueda por destino (no por tarjeta)
+            var destinos = sinFoto
+                .Where(i => string.IsNullOrWhiteSpace(i.ImageUrl)
+                         && !string.IsNullOrWhiteSpace(i.Destination))
+                .Select(i => i.Destination!)
+                .Distinct()
+                .ToList();
+
+            var tareas = destinos.ToDictionary(d => d, d => BuscarFotoWikimediaAsync(d));
+
+            await Task.WhenAll(tareas.Values);
+
+            foreach (var item in sinFoto.Where(i => string.IsNullOrWhiteSpace(i.ImageUrl)
+                                                 && !string.IsNullOrWhiteSpace(i.Destination)))
+            {
+                var foto = tareas[item.Destination!].Result;
+
+                if (foto != null)
+                {
+                    item.ImageUrl = foto.UrlImagen;
+                    modelo.CreditosImagen[item.MediaId] = ArmarCredito(foto);
+                }
+            }
+        }
+
+        private static string? BuscarFotoLocal(string? destino)
+        {
+            if (string.IsNullOrWhiteSpace(destino))
+            {
+                return null;
+            }
+
+            return FotosLocales
+                .Where(f => destino.Contains(f.Key, StringComparison.OrdinalIgnoreCase))
+                .Select(f => f.Value)
+                .FirstOrDefault();
+        }
+
+        // Busca UNA foto del destino en Wikimedia. Nunca rompe la página:
+        // si falla o tarda más de 4 segundos, devuelve null.
+        private async Task<WikimediaImagenDto?> BuscarFotoWikimediaAsync(string destino)
+        {
+            string clave = $"foto-destino:{destino.ToLowerInvariant()}";
+
+            if (_cache.TryGetValue(clave, out WikimediaImagenDto? enCache))
+            {
+                return enCache;
+            }
+
+            try
+            {
+                var busqueda = _wikimediaService.BuscarImagenesAsync($"{destino} Costa Rica", 3);
+                var ganadora = await Task.WhenAny(busqueda, Task.Delay(EsperaMaximaFoto));
+
+                if (ganadora != busqueda)
+                {
+                    return null;   // tardó demasiado: no se guarda en caché
+                }
+
+                var foto = (await busqueda)
+                    .FirstOrDefault(f => !string.IsNullOrWhiteSpace(f.UrlImagen));
+
+                _cache.Set(clave, foto, DuracionCacheFotos);
+
+                return foto;
+            }
+            catch (Exception ex) when (ex is HttpRequestException
+                                    or TaskCanceledException
+                                    or System.Text.Json.JsonException)
+            {
+                return null;
+            }
+        }
+
+        // Ej.: "Foto: Juan Pérez · CC BY-SA 4.0 · Wikimedia Commons"
+        private static string ArmarCredito(WikimediaImagenDto foto)
+        {
+            var partes = new List<string>();
+
+            if (!string.IsNullOrWhiteSpace(foto.Autor))
+            {
+                partes.Add(foto.Autor);
+            }
+
+            if (!string.IsNullOrWhiteSpace(foto.Licencia))
+            {
+                partes.Add(foto.Licencia);
+            }
+
+            partes.Add("Wikimedia Commons");
+
+            return "Foto: " + string.Join(" · ", partes);
         }
 
         // ------------------------------------------------------------

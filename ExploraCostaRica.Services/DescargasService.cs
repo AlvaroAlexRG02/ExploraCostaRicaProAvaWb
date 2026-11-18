@@ -12,8 +12,6 @@ namespace ExploraCostaRica.Services
     {
         private readonly ExploraCostaRicaDbContext _context;
 
-        private const string CorreoUsuarioDemo =
-            "demo@exploracostarica.local";
 
         private const long TamanoMaximo = 2 * 1024 * 1024;
 
@@ -32,18 +30,6 @@ namespace ExploraCostaRica.Services
             _context = context;
         }
 
-        // ====================================================
-        // USUARIO DEMO
-        // ====================================================
-
-        public async Task<User?> ObtenerUsuarioAsync()
-        {
-            return await _context.Users
-                .AsNoTracking()
-                .FirstOrDefaultAsync(u =>
-                    u.Email == CorreoUsuarioDemo &&
-                    u.IsActive);
-        }
 
         // ====================================================
         // CONTENIDOS DISPONIBLES

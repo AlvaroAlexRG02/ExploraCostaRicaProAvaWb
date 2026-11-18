@@ -37,7 +37,7 @@
     <div id="explorar-cargando" class="explorar-cargando" hidden>
         <div class="explorar-cargando-caja">
             <div class="spinner-border text-success" role="status"></div>
-            <p>Buscando en nuestro catálogo, YouTube y GBIF…</p>
+            <p>Buscando en nuestro catálogo, YouTube, Open Library, Crossref y GBIF…</p>
         </div>
     </div>
 
@@ -166,7 +166,9 @@
                 {
                     <div class="pista-apis">
                         💡 Escribí algo en el buscador (ej.: <em>Monteverde</em>, <em>quetzal</em>, <em>Arenal</em>)
-                        para ver también <strong>videos de YouTube</strong> y
+                        para ver también <strong>videos de YouTube</strong>,
+                        <strong>libros de Open Library</strong>,
+                        <strong>artículos científicos de Crossref</strong> y
                         <strong>registros científicos de GBIF</strong>.
                     </div>
                 }
@@ -240,12 +242,22 @@
                             </article>
                         }
 
-                        @* ===== 2. CONTENIDO EN VIVO: YOUTUBE (API 4) Y GBIF (API 10) =====
+                        @* ===== 2. CONTENIDO EN VIVO: YOUTUBE (API 4), OPEN LIBRARY (API 6),
+                                  CROSSREF (API 7) Y GBIF (API 10) =====
                        Vienen como MediaItemDto: la vista no conoce el JSON propio
                        de cada API, solo el formato común. *@
                         @foreach (var ext in Model.ResultadosExternos)
                         {
                             bool esVideo = ext.ContentType == "Video";
+
+                            // Etiqueta de la atribución según el tipo de contenido
+                            string etiquetaAutor = ext.ContentType switch
+                            {
+                                "Video" => "Canal",
+                                "Libro" => "Autor",
+                                "Paper" => "Autores",
+                                _ => "Registro"
+                            };
 
                             <article class="explorar-card explorar-card-externa">
 
@@ -279,11 +291,11 @@
                                         }
                                     </div>
 
-                                    @* Atribución: autor/canal y licencia, como piden YouTube y GBIF *@
+                                    @* Atribución: autor/canal y licencia, como piden las fuentes *@
                                     @if (!string.IsNullOrWhiteSpace(ext.Author))
                                     {
                                         <p class="atribucion">
-                                            @(esVideo ? "Canal" : "Registro"): @ext.Author
+                                            @etiquetaAutor: @ext.Author
                                         </p>
                                     }
 
@@ -311,7 +323,8 @@
     <script src="~/js/favoritos.js" asp-append-version="true"></script>
     <script>
         // Al enviar la búsqueda con texto, mostramos el aviso de carga,
-        // porque consultar YouTube y GBIF puede tardar unos segundos.
+        // porque consultar las APIs externas puede tardar unos segundos.
+
         document.getElementById("explorarForm").addEventListener("submit", function() {
             const texto = this.querySelector("input[name='Texto']").value.trim();
             if (texto.length > 0) {

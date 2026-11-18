@@ -6,8 +6,6 @@ namespace ExploraCostaRica.Services
 {
     public interface IDescargasService
     {
-        // Obtener usuario de demostración
-        Task<User?> ObtenerUsuarioAsync();
 
         // Consultar contenidos activos
         Task<List<MediaItem>> ObtenerContenidosAsync();

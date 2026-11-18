@@ -528,12 +528,6 @@
         Contenido disponible
     </h3>
 
-    @if (!Model.UsuarioDemoId.HasValue)
-    {
-        <div class="alert alert-warning">
-            No existe un usuario demo activo para registrar descargas.
-        </div>
-    }
 
     @if (!Model.Contenidos.Any())
     {
@@ -586,8 +580,8 @@
                                value="@item.MediaId" />
 
                         <button type="submit"
-                                class="btn-descargar"
-                                disabled="@(!Model.UsuarioDemoId.HasValue)">
+                                class="btn-descargar">
+
                             ⬇ Descargar JSON
                         </button>
 

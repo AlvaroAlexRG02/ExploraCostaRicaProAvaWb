@@ -14,10 +14,11 @@ namespace ExploraCostaRica.Services
     //   1. LOCAL: la vista vw_MediaCatalog de SQL Server, que ya
     //      junta el contenido con su tipo, categoría, destino y fuente.
     //
-    //   2. EXTERNO (en vivo): YouTube (API 4) y GBIF (API 10).
+    //   2. EXTERNO (en vivo): YouTube (API 4), Open Library (API 6),
+    //      Crossref (API 7) y GBIF (API 10).
     //      Solo se consultan cuando la persona escribe algo en el
     //      buscador, para no gastar la cuota de YouTube en cada
-    //      visita a la página. Ambos servicios tienen caché.
+    //      visita a la página. Todos los servicios tienen caché.
     // ============================================================
     public class ExplorarService : IExplorarService
     {
@@ -27,10 +28,14 @@ namespace ExploraCostaRica.Services
         // Nombres de las fuentes externas (iguales a la tabla ApiSources)
         private const string FuenteYouTube = "YouTube";
         private const string FuenteGbif = "GBIF";
+        private const string FuenteOpenLibrary = "Open Library";
+        private const string FuenteCrossref = "Crossref";
 
         // Tipos de contenido que traen esas fuentes
         private const string TipoVideo = "Video";
         private const string TipoBiodiversidad = "Biodiversidad";
+        private const string TipoLibro = "Libro";
+        private const string TipoPaper = "Paper";
 
         // Cuántos resultados pedir a cada API externa
         private const int CantidadPorApi = 8;
@@ -38,23 +43,29 @@ namespace ExploraCostaRica.Services
         private readonly ExploraCostaRicaDbContext _context;
         private readonly IYouTubeApiService _youTubeService;
         private readonly IGbifApiService _gbifService;
+        private readonly IOpenLibraryApiService _openLibraryService;
+        private readonly ICrossrefApiService _crossrefService;
 
         // Todo llega por inyección de dependencias (Program.cs)
         public ExplorarService(
             ExploraCostaRicaDbContext context,
             IYouTubeApiService youTubeService,
-            IGbifApiService gbifService)
+            IGbifApiService gbifService,
+            IOpenLibraryApiService openLibraryService,
+            ICrossrefApiService crossrefService)
         {
             _context = context;
             _youTubeService = youTubeService;
             _gbifService = gbifService;
+            _openLibraryService = openLibraryService;
+            _crossrefService = crossrefService;
         }
 
         public async Task<ExplorarViewModel> BuscarAsync(ExplorarFiltro filtro, int? userId)
         {
             var modelo = new ExplorarViewModel { Filtro = filtro };
 
-            // Ids de las fuentes registradas (para saber cuál es YouTube y cuál GBIF)
+            // Ids de las fuentes registradas (para saber cuál es cada API externa)
             var fuentes = await _context.ApiSources
                 .AsNoTracking()
                 .Where(s => s.IsActive)
@@ -63,6 +74,8 @@ namespace ExploraCostaRica.Services
 
             int? idYouTube = fuentes.FirstOrDefault(s => s.Name == FuenteYouTube)?.SourceId;
             int? idGbif = fuentes.FirstOrDefault(s => s.Name == FuenteGbif)?.SourceId;
+            int? idOpenLibrary = fuentes.FirstOrDefault(s => s.Name == FuenteOpenLibrary)?.SourceId;
+            int? idCrossref = fuentes.FirstOrDefault(s => s.Name == FuenteCrossref)?.SourceId;
 
             // ----------------------------------------------------
             // 1. CONTENIDO LOCAL (SQL Server)
@@ -86,9 +99,9 @@ namespace ExploraCostaRica.Services
             modelo.Resultados = await Ordenar(query, filtro.Orden).ToListAsync();
 
             // ----------------------------------------------------
-            // 2. CONTENIDO EXTERNO (YouTube + GBIF)
+            // 2. CONTENIDO EXTERNO (YouTube + Open Library + Crossref + GBIF)
             // ----------------------------------------------------
-            await BuscarEnApisAsync(filtro, modelo, idYouTube, idGbif);
+            await BuscarEnApisAsync(filtro, modelo, idYouTube, idGbif, idOpenLibrary, idCrossref);
 
             modelo.ResultadosExternos = OrdenarExternos(modelo.ResultadosExternos, filtro.Orden);
 
@@ -111,7 +124,8 @@ namespace ExploraCostaRica.Services
         //   - Debe haber texto en el buscador.
         //   - Categoría y destino son filtros de nuestra base de
         //     datos; si se usan, no se consultan APIs externas.
-        //   - Tipo "Video" -> solo YouTube; "Biodiversidad" -> solo GBIF.
+        //   - Tipo "Video" -> solo YouTube; "Biodiversidad" -> solo GBIF;
+        //     "Libro" -> solo Open Library; "Paper" -> solo Crossref.
         //   - Si se eligió una fuente, solo se consulta esa.
         // Si una API falla, se muestra un aviso y la página sigue
         // funcionando con lo demás.
@@ -120,7 +134,9 @@ namespace ExploraCostaRica.Services
             ExplorarFiltro filtro,
             ExplorarViewModel modelo,
             int? idYouTube,
-            int? idGbif)
+            int? idGbif,
+            int? idOpenLibrary,
+            int? idCrossref)
         {
             if (string.IsNullOrWhiteSpace(filtro.Texto)
                 || filtro.CategoriaId.HasValue
@@ -137,7 +153,16 @@ namespace ExploraCostaRica.Services
                 (string.IsNullOrWhiteSpace(filtro.Tipo) || filtro.Tipo == TipoBiodiversidad)
                 && (!filtro.FuenteId.HasValue || filtro.FuenteId == idGbif);
 
-            if (!incluirYouTube && !incluirGbif)
+            bool incluirOpenLibrary =
+                (string.IsNullOrWhiteSpace(filtro.Tipo) || filtro.Tipo == TipoLibro)
+                && (!filtro.FuenteId.HasValue || filtro.FuenteId == idOpenLibrary);
+
+            bool incluirCrossref =
+                (string.IsNullOrWhiteSpace(filtro.Tipo) || filtro.Tipo == TipoPaper)
+                && (!filtro.FuenteId.HasValue || filtro.FuenteId == idCrossref);
+
+            if (!incluirYouTube && !incluirGbif
+                && !incluirOpenLibrary && !incluirCrossref)
             {
                 return;
             }
@@ -146,7 +171,7 @@ namespace ExploraCostaRica.Services
 
             string texto = filtro.Texto.Trim();
 
-            // Las dos APIs se consultan AL MISMO TIEMPO (Task.WhenAll),
+            // Las APIs se consultan AL MISMO TIEMPO (Task.WhenAll),
             // así la página espera lo que tarde la más lenta, no la suma.
             var tareaYouTube = incluirYouTube
                 ? ConsultarSeguroAsync(
@@ -160,9 +185,23 @@ namespace ExploraCostaRica.Services
                     FuenteGbif, modelo.Avisos)
                 : Task.FromResult(new List<MediaItemDto>());
 
-            await Task.WhenAll(tareaYouTube, tareaGbif);
+            var tareaOpenLibrary = incluirOpenLibrary
+                ? ConsultarSeguroAsync(
+                    () => _openLibraryService.BuscarContenidoAsync(texto, CantidadPorApi),
+                    FuenteOpenLibrary, modelo.Avisos)
+                : Task.FromResult(new List<MediaItemDto>());
+
+            var tareaCrossref = incluirCrossref
+                ? ConsultarSeguroAsync(
+                    () => _crossrefService.BuscarContenidoAsync(texto, CantidadPorApi),
+                    FuenteCrossref, modelo.Avisos)
+                : Task.FromResult(new List<MediaItemDto>());
+
+            await Task.WhenAll(tareaYouTube, tareaGbif, tareaOpenLibrary, tareaCrossref);
 
             modelo.ResultadosExternos.AddRange(tareaYouTube.Result);
+            modelo.ResultadosExternos.AddRange(tareaOpenLibrary.Result);
+            modelo.ResultadosExternos.AddRange(tareaCrossref.Result);
             modelo.ResultadosExternos.AddRange(tareaGbif.Result);
         }
 
@@ -303,7 +342,8 @@ namespace ExploraCostaRica.Services
         // ------------------------------------------------------------
 
         // Tipos: los de la base + los que trajeron las APIs externas.
-        // "Video" y "Biodiversidad" siempre aparecen para poder filtrar.
+        // "Video", "Biodiversidad", "Libro" y "Paper" siempre aparecen
+        // para poder filtrar.
         private async Task<List<OpcionFiltro>> ObtenerTiposAsync(List<MediaItemDto> externos)
         {
             var tipos = await _context.VwMediaCatalogs.AsNoTracking()
@@ -311,7 +351,7 @@ namespace ExploraCostaRica.Services
                 .Select(g => new OpcionFiltro { Valor = g.Key, Texto = g.Key, Cantidad = g.Count() })
                 .ToListAsync();
 
-            foreach (var nombre in new[] { TipoVideo, TipoBiodiversidad })
+            foreach (var nombre in new[] { TipoVideo, TipoBiodiversidad, TipoLibro, TipoPaper })
             {
                 if (!tipos.Any(t => t.Valor == nombre))
                 {
@@ -360,8 +400,9 @@ namespace ExploraCostaRica.Services
                 .ToListAsync();
         }
 
-        // Fuentes: todas las registradas en ApiSources (así YouTube y
-        // GBIF aparecen aunque no haya contenido guardado de ellas),
+        // Fuentes: todas las registradas en ApiSources (así YouTube, GBIF,
+        // Open Library y Crossref aparecen aunque no haya contenido guardado),
+
         // con lo guardado en la base + lo que trajo esta búsqueda.
         private async Task<List<OpcionFiltro>> ObtenerFuentesAsync(List<MediaItemDto> externos)
         {

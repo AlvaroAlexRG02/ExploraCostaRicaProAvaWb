@@ -1,16 +1,26 @@
 ﻿
+using ExploraCostaRica.Extensions;
 using ExploraCostaRica.Models.ViewModels;
 using ExploraCostaRica.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using System.Text;
 
 namespace ExploraCostaRica.Controllers;
 
+// Las descargas son personales: hay que iniciar sesión.
+[Authorize]
 public class DescargasController : Controller
 {
     private readonly IDescargasService _descargasService;
 
     private const long TamanoMaximo = 2 * 1024 * 1024;
+
+    // Usuario autenticado, tomado de la cookie de sesión.
+    private int UserId => User.GetUserId()
+        ?? throw new InvalidOperationException(
+            "La sesión no tiene un UserId válido.");
 
     public DescargasController(
         IDescargasService descargasService)
@@ -25,24 +35,17 @@ public class DescargasController : Controller
     [HttpGet]
     public async Task<IActionResult> Index()
     {
-        var usuario =
-            await _descargasService.ObtenerUsuarioAsync();
-
         var modelo = new DescargasViewModel
         {
-            UsuarioDemoId = usuario?.UserId,
-            NombreUsuario = usuario?.Name ?? "Sin usuario demo",
+            UsuarioId = UserId,
+            NombreUsuario = User.FindFirstValue(ClaimTypes.Name) ?? "",
 
             Contenidos =
-                await _descargasService.ObtenerContenidosAsync()
-        };
+                await _descargasService.ObtenerContenidosAsync(),
 
-        if (usuario != null)
-        {
-            modelo.Historial =
-                await _descargasService.ObtenerHistorialAsync(
-                    usuario.UserId);
-        }
+            Historial =
+                await _descargasService.ObtenerHistorialAsync(UserId)
+        };
 
         return View(modelo);
     }
@@ -55,17 +58,6 @@ public class DescargasController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DescargarJson(long mediaId)
     {
-        var usuario =
-            await _descargasService.ObtenerUsuarioAsync();
-
-        if (usuario == null)
-        {
-            TempData["Error"] =
-                "No existe un usuario demo activo.";
-
-            return RedirectToAction(nameof(Index));
-        }
-
         var json =
             await _descargasService.GenerarJsonAsync(mediaId);
 
@@ -76,7 +68,7 @@ public class DescargasController : Controller
             $"ExploraCostaRica_{mediaId}.json";
 
         await _descargasService.RegistrarDescargaAsync(
-            usuario.UserId,
+            UserId,
             mediaId,
             nombre);
 
@@ -93,16 +85,10 @@ public class DescargasController : Controller
     [HttpGet]
     public async Task<IActionResult> Abrir(long id)
     {
-        var usuario =
-            await _descargasService.ObtenerUsuarioAsync();
-
-        if (usuario == null)
-            return NotFound();
-
         var descarga =
             await _descargasService.ObtenerDescargaAsync(
                 id,
-                usuario.UserId);
+                UserId);
 
         if (descarga == null)
             return NotFound();
@@ -128,16 +114,11 @@ public class DescargasController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Eliminar(long id)
     {
-        var usuario =
-            await _descargasService.ObtenerUsuarioAsync();
-
-        if (usuario == null)
-            return NotFound();
-
         var eliminado =
             await _descargasService.EliminarDescargaAsync(
                 id,
-                usuario.UserId);
+                UserId);
+
 
         if (!eliminado)
             return NotFound();

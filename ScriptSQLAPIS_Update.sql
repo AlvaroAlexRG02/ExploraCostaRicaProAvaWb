@@ -362,7 +362,83 @@ GO
 
 
 -- ============================================================
+-- API 6 - OPEN LIBRARY (LIBROS)
+-- No requiere API Key.
+-- ============================================================
+
+INSERT INTO ApiSources
+(
+    Name,
+    Description,
+    BaseUrl,
+    WebsiteUrl,
+    ContentTypeId,
+    RequiresApiKey,
+    ApiKeySettingName
+)
+SELECT
+    'Open Library',
+    'Libros, autores y portadas sobre Costa Rica, su naturaleza y su cultura.',
+    'https://openlibrary.org/',
+    'https://openlibrary.org',
+    (
+        SELECT ContentTypeId
+        FROM ContentTypes
+        WHERE Name = 'Libro'
+    ),
+    0,
+    NULL
+WHERE NOT EXISTS
+(
+    SELECT 1
+    FROM ApiSources
+    WHERE Name = 'Open Library'
+);
+
+GO
+
+
+-- ============================================================
+-- API 7 - CROSSREF (PAPERS)
+-- No requiere API Key. El correo para el modo "polite" es
+-- opcional y va en User Secrets con el nombre Crossref:Mailto.
+-- ============================================================
+
+INSERT INTO ApiSources
+(
+    Name,
+    Description,
+    BaseUrl,
+    WebsiteUrl,
+    ContentTypeId,
+    RequiresApiKey,
+    ApiKeySettingName
+)
+SELECT
+    'Crossref',
+    'Articulos cientificos e investigacion sobre Costa Rica.',
+    'https://api.crossref.org/',
+    'https://www.crossref.org',
+    (
+        SELECT ContentTypeId
+        FROM ContentTypes
+        WHERE Name = 'Paper'
+    ),
+    0,
+    NULL
+WHERE NOT EXISTS
+(
+    SELECT 1
+    FROM ApiSources
+    WHERE Name = 'Crossref'
+);
+
+GO
+
+
+-- ============================================================
 -- DASHBOARD - FORMATO JSON COMUN v1.0
+
 --
 -- Crea las tablas Sources y SourceItems.
 -- Se puede ejecutar varias veces: no borra ni duplica nada.

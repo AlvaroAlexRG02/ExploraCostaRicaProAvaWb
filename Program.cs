@@ -191,6 +191,42 @@ builder.Services.AddHttpClient<IGbifApiService, GbifApiService>(
 
 
 // ============================================================
+// API EXTERNA: OPEN LIBRARY (LIBROS) - API 6
+// ============================================================
+
+// No requiere API Key. Open Library pide un User-Agent que
+// identifique la aplicación y uso de bajo volumen (hay caché).
+builder.Services.AddHttpClient<IOpenLibraryApiService, OpenLibraryApiService>(
+    client =>
+    {
+        client.Timeout = TimeSpan.FromSeconds(20);
+
+        client.DefaultRequestHeaders.UserAgent.ParseAdd(
+            "ExploraCostaRica/1.0 (proyecto academico SC-701)"
+        );
+    }
+);
+
+
+// ============================================================
+// API EXTERNA: CROSSREF (PAPERS) - API 7
+// ============================================================
+
+// No requiere API Key. Modo "polite": User-Agent + correo
+// opcional en User Secrets ("Crossref:Mailto").
+builder.Services.AddHttpClient<ICrossrefApiService, CrossrefApiService>(
+    client =>
+    {
+        client.Timeout = TimeSpan.FromSeconds(20);
+
+        client.DefaultRequestHeaders.UserAgent.ParseAdd(
+            "ExploraCostaRica/1.0 (proyecto academico SC-701)"
+        );
+    }
+);
+
+
+// ============================================================
 // CREAR LA APLICACIÓN
 // ============================================================
 

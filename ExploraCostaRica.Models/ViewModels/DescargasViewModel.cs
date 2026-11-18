@@ -5,7 +5,9 @@ namespace ExploraCostaRica.Models.ViewModels
 {
     public class DescargasViewModel
     {
-        public int? UsuarioDemoId { get; set; }
+        // Usuario autenticado dueño del historial.
+        public int UsuarioId { get; set; }
+
 
         public string NombreUsuario { get; set; } = "";
 
